@@ -17,7 +17,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//TODO Set up parameters to affect speed, direction and possibly distance
 	//Movement function for AI
 	virtual void MoveCharacter();
 
@@ -27,8 +26,15 @@ protected:
 
 private:
 
-	//Pawn of instance of script
-	AActor* thisPawn; 
+	FVector newLocation;
 
+	//Value for movement speed
+	float movSpeed = 10.0;
+
+	//Used to store distance between two objects
+	float distanceLength;
+
+	//Reference pointer to the enemy that is within the minimum distance
+	const AActor* enemyTarget = nullptr ;
 	
 };
