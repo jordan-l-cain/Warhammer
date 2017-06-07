@@ -69,7 +69,7 @@ void AMovement::MoveAI( APawn* character, TArray<AActor*> OverlappingActors)
 
 		if (distanceLength < 1600.0)
 		{
-			movSpeed = 0.0;
+			moveSpeed = 0.0;
 
 			enemyTarget = actor;
 
