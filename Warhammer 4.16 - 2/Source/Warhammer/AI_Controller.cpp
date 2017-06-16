@@ -34,7 +34,6 @@ void AAI_Controller::Tick(float DeltaTime)
 	//Movement.MoveAI(GetControllerAI(), OverlappingActors);
 	MoveAI(character, OverlappingActors);
 	
-
 }
 
 // Called to bind functionality to input

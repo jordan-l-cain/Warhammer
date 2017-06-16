@@ -17,12 +17,14 @@ public:
 	AMovement();
 
 	// Function that handles movement of AI
-	void MoveAI( AActor* character, TArray<AActor*> OverlappingActors);
+	void MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingActors);
+
+	//Boolean that's used to determine when two characters have targeted eachother for attack
+	bool targeted = false;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 
 
 public:	
@@ -32,12 +34,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	//Reference pointer to the enemy that is within the minimum distance
+	AAI_Controller* enemyTarget = nullptr;
+
 private:
 
 	FVector newLocation;
-
-	//Bool used for one time character ensure and cast
-	bool characterCast = false;
 	
 	//Value for movement speed
 	float moveSpeed = 10.0;
@@ -45,9 +47,13 @@ private:
 	//Used to store distance between two objects
 	float distanceLength;
 
-	//Reference pointer to the enemy that is within the minimum distance
-	const AActor* enemyTarget = nullptr;
+	//Distance used strictly between character and enemyTarget
+	float targetDistanceLength;
 	
 	//Array used to store individual overlapping actors so they may be cast
 	TArray<AAI_Controller*> otherChars;
+
+	//FVector used for movement direction
+	FVector moveDirection;
+
 };

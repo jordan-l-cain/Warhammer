@@ -36,21 +36,13 @@ void AMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AMovement::MoveAI( AActor* character, TArray<AActor*> OverlappingActors)
+void AMovement::MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingActors)
 {
-	if (!characterCast)
+	if (!enemyTarget)
 	{
 		if (ensure(character))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("character name: %s is attempting to cast from %s to AAI_Controller"), *character->GetName(), *character->GetActorClass()->GetFName().ToString());
-
-			AAI_Controller* thisChar = Cast<AAI_Controller>(character->GetOwner());
-
-			if (!ensure(thisChar))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("thisChar pointer (character cast) is null."));
-				return;
-			}
+			moveDirection = character->GetActorForwardVector();
 
 		} else
 		{
@@ -58,71 +50,86 @@ void AMovement::MoveAI( AActor* character, TArray<AActor*> OverlappingActors)
 			return;
 		}
 
-		characterCast = true;
-	}
 
-	if (ensure(character))
-	{
-		AddMovementInput(character->GetActorForwardVector(), moveSpeed);
-
-	} else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("character pointer is null."));
-		return;
-	}
-
-	
-	for (auto* actor : OverlappingActors)
-	{
-		if (!otherChars.Contains(actor))
+		for (auto* actor : OverlappingActors)
 		{
-			otherChars.Add(Cast<AAI_Controller>(actor));
-			UE_LOG(LogTemp, Warning, TEXT("an actor was added to the array"));
+			if (!otherChars.Contains(actor))
+			{
+				otherChars.Add(Cast<AAI_Controller>(actor));
+				UE_LOG(LogTemp, Warning, TEXT("an actor was added to the array"));
+			}
+
 		}
 
+		for (auto* otherChar : otherChars)
+		{
+			if (!ensure(otherChar))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("otherChar pointer is null."));
+				return;
+
+				//UE_LOG(LogTemp, Warning, TEXT("%s is overlapped with %s."), *otherChar->GetName(), *character->GetName());
+				//UE_LOG(LogTemp, Warning, TEXT("This character's type is %s."), *thisChar->GetCharacterType());
+			}
+
+			///Using movespeed of this ai as a parameter for when to stop checking distances of others
+			///if ((thisChar->GetCharacterType() != otherChar->GetCharacterType()) && moveSpeed > 0.0) 
+			if (character->GetCharacterType() != otherChar->GetCharacterType() && moveSpeed > 0.0)
+			{
+				///Find distance between this ai and each enemy in the overlapping actors array
+				FVector distance;
+				distance = character->GetActorLocation() - otherChar->GetActorLocation();
+				distanceLength = distance.Size();
+
+				///UE_LOG(LogTemp, Warning, TEXT("The distance is %f"), distanceLength);
+
+				if (distanceLength < 2000.0 && !targeted && !otherChar->targeted)
+				{
+					enemyTarget = otherChar;
+					enemyTarget->targeted = true;
+					enemyTarget->enemyTarget = character;
+					targeted = true;
+
+					UE_LOG(LogTemp, Warning, TEXT("The enemy: %s, is within distance"), *enemyTarget->GetName());
+
+				} else if (otherChar->targeted && moveSpeed > 0.0)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("%s is already targeted"), *otherChar->GetName());
+				}
+
+				if (targeted)
+				{
+					moveSpeed = 0.0;
+				}
+
+			} else if (character->GetCharacterType() == otherChar->GetCharacterType())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s is the same class as me: %s"), *otherChar->GetName(), *character->GetName());
+
+			}
+		}
+
+		AddMovementInput(moveDirection, moveSpeed);
 	}
-	
-	for (auto* otherChar : otherChars)
+
+	//TODO make characters targeting each other move towards each other
+	if (enemyTarget)
 	{
-		if (!ensure(otherChar))
-		{	
-			UE_LOG(LogTemp, Warning, TEXT("otherChar pointer is null."));
-			return;
+		moveSpeed = 0.1;
 
-			//UE_LOG(LogTemp, Warning, TEXT("%s is overlapped with %s."), *otherChar->GetName(), *character->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("This character's type is %s."), *thisChar->GetCharacterType());
-		}
+		///Find distance between this ai and each enemy in the overlapping actors array
+		FVector distance;
+		distance = character->GetActorLocation() - enemyTarget->GetActorLocation();
+		targetDistanceLength = distance.Size();
 
-		//TODO Comparison of enums should work, but thisChar cast from character is creating a null pointer
-		///Using movespeed of this ai as a parameter for when to stop checking distances of others
-		///if ((thisChar->GetCharacterType() != otherChar->GetCharacterType()) && moveSpeed > 0.0) 
-		if ( moveSpeed > 0.0)
-		{
-			
-			///UE_LOG(LogTemp, Warning, TEXT("enemy has tag"));
-			FVector distance;
-
-			///Find distance between this ai and 
-			distance = character->GetActorLocation() - otherChar->GetActorLocation();
-			distanceLength = distance.Size();
-
-			UE_LOG(LogTemp, Warning, TEXT("The distance is %f"), distanceLength);
-
-		}else
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("actor is not tagged"));
-		}
-
-
-		if (distanceLength < 1600.0)
+		if (targetDistanceLength < 800.0)
 		{
 			moveSpeed = 0.0;
-
-			enemyTarget = otherChar;
-
-			UE_LOG(LogTemp, Warning, TEXT("The enemy: %s, is within distance"), *enemyTarget->GetName());
 		}
+
+		AddMovementInput(moveDirection, moveSpeed);
 	}
+	
 	
 }
 //TODO create playercontroller and aicontroller classes, they will pass their overlapping actor array as well as their target. The array will be used in this script to ensure they maneuver around each other and obstacles

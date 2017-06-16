@@ -37,7 +37,7 @@ protected:
 	ECharacterType characterType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
-	AActor* character;
+	AAI_Controller* character;
 
 	//Array used to store all nearby actors
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
