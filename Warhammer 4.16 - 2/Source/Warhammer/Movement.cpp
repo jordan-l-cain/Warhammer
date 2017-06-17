@@ -115,19 +115,27 @@ void AMovement::MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingAct
 	//TODO make characters targeting each other move towards each other
 	if (enemyTarget)
 	{
-		moveSpeed = 0.1;
+		moveSpeed = 0.25;
 
 		///Find distance between this ai and each enemy in the overlapping actors array
 		FVector distance;
 		distance = character->GetActorLocation() - enemyTarget->GetActorLocation();
 		targetDistanceLength = distance.Size();
 
+		//TODO change from instant rotation to rotation over time
+		//
+		FRotator characterRotate = FRotationMatrix::MakeFromX(FVector(distance.X, distance.Y, 0)).Rotator();
+		///character->SetActorRotation(lerp from current rotation to new rotation of characterRotate);?
+		///character->SetActorRotation(distance.Rotation());
+		///character->SetActorRotation(characterRotate);
+		character->GetRootComponent()->SetWorldRotation(characterRotate);
+
 		if (targetDistanceLength < 800.0)
 		{
 			moveSpeed = 0.0;
 		}
 
-		AddMovementInput(moveDirection, moveSpeed);
+		AddMovementInput(character->GetActorForwardVector() * -1, moveSpeed);
 	}
 	
 	
