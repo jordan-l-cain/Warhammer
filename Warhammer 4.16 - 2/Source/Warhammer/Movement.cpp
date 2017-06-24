@@ -68,8 +68,8 @@ void AMovement::MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingAct
 				UE_LOG(LogTemp, Warning, TEXT("otherChar pointer is null."));
 				return;
 
-				//UE_LOG(LogTemp, Warning, TEXT("%s is overlapped with %s."), *otherChar->GetName(), *character->GetName());
-				//UE_LOG(LogTemp, Warning, TEXT("This character's type is %s."), *thisChar->GetCharacterType());
+				///UE_LOG(LogTemp, Warning, TEXT("%s is overlapped with %s."), *otherChar->GetName(), *character->GetName());
+				///UE_LOG(LogTemp, Warning, TEXT("This character's type is %s."), *thisChar->GetCharacterType());
 			}
 
 			///Using movespeed of this ai as a parameter for when to stop checking distances of others
@@ -90,11 +90,11 @@ void AMovement::MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingAct
 					enemyTarget->enemyTarget = character;
 					targeted = true;
 
-					UE_LOG(LogTemp, Warning, TEXT("The enemy: %s, is within distance"), *enemyTarget->GetName());
+					///UE_LOG(LogTemp, Warning, TEXT("The enemy: %s, is within distance"), *enemyTarget->GetName());
 
 				} else if (otherChar->targeted && moveSpeed > 0.0)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("%s is already targeted"), *otherChar->GetName());
+					///UE_LOG(LogTemp, Warning, TEXT("%s is already targeted"), *otherChar->GetName());
 				}
 
 				if (targeted)
@@ -104,7 +104,7 @@ void AMovement::MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingAct
 
 			} else if (character->GetCharacterType() == otherChar->GetCharacterType())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("%s is the same class as me: %s"), *otherChar->GetName(), *character->GetName());
+				///UE_LOG(LogTemp, Warning, TEXT("%s is the same class as me: %s"), *otherChar->GetName(), *character->GetName());
 
 			}
 		}
@@ -112,7 +112,6 @@ void AMovement::MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingAct
 		AddMovementInput(moveDirection, moveSpeed);
 	}
 
-	//TODO make characters targeting each other move towards each other
 	if (enemyTarget)
 	{
 		moveSpeed = 0.25;
@@ -140,4 +139,3 @@ void AMovement::MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingAct
 	
 	
 }
-//TODO create playercontroller and aicontroller classes, they will pass their overlapping actor array as well as their target. The array will be used in this script to ensure they maneuver around each other and obstacles

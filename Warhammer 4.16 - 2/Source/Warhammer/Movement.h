@@ -37,12 +37,12 @@ public:
 	//Reference pointer to the enemy that is within the minimum distance
 	AAI_Controller* enemyTarget = nullptr;
 
+	//Value for movement speed
+	float moveSpeed = 10.0;
+
 private:
 
 	FVector newLocation;
-	
-	//Value for movement speed
-	float moveSpeed = 10.0;
 
 	//Used to store distance between two objects
 	float distanceLength;

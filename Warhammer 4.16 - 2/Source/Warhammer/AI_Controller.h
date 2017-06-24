@@ -14,6 +14,14 @@ enum class ECharacterType : uint8
 	Enemy	UMETA(DisplayName = "Enemy")
 };
 
+enum class AIStates : uint8
+{
+	IDLE UMETA(DisplayName = "Idle"),
+	MOVE UMETA(DisplayName = "Move"),
+	ATTACK UMETA(DisplayName = "Attack"),
+	DIE UMETA(DisplayName = "Die")
+};
+
 /**
  * This script will control the AI's states and actions.
  */
@@ -32,6 +40,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	//TMap<AIStates, UFunction> AIStatesDictionary;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
 	//Enum used to set a character type that is readable by the movement script, so it may determine it's actions
 	ECharacterType characterType;
@@ -42,6 +52,15 @@ protected:
 	//Array used to store all nearby actors
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
 	TArray<AActor*> OverlappingActors;
+
+	//Character Health
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
+	float characterHealth;
+
+	//TODO change to a float value affected by stats?
+	//Boolean that determines who can attack, read/set by combat class 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Settings")
+	bool canAttack = false;
 
 public:
 
@@ -54,7 +73,30 @@ public:
 	// Return function that will allow the movement script to determine the character type
 	ECharacterType GetCharacterType();
 
+	//Current state the AI is in
+	AIStates curState;
+
+	//Function that adjusts character health
+	void ModHealth(float modifier);
+
+	//Set function for canAttack boolean
+	void ModCanAttack(bool boolean);
+
+	//Read function for canAttack boolean
+	bool GetCanAttack();
+
 private:
+	
+	//Function that sets the AI's state
+	void SetState(AIStates state);
+
+	void StateIdle();
+
+	void StateMove();
+
+	void StateAttack();
+
+	void StateDie();
 
 	
 	
