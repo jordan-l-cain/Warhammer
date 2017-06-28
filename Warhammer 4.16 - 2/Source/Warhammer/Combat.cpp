@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Warhammer.h"
-#include "NPC_Controller.h"
+#include "NPC.h"
 #include "Combat.h"
 
-//TArray<AAI_Controller*> UCombat::CombatList;
+TArray<ANPC*> UCombat::CombatList;
 
 UCombat::UCombat()
 {
 	
 }
-/*
-void UCombat::Attack(AAI_Controller* npc, AAI_Controller* enemy)
+
+void UCombat::Attack(ANPC* npc, ANPC* enemy)
 {
 	
 	if (!ensure(npc) || !ensure(enemy))
@@ -30,10 +30,8 @@ void UCombat::Attack(AAI_Controller* npc, AAI_Controller* enemy)
 
 	if (CombatList.Contains(npc) && CombatList.Contains(enemy))
 	{
-		ANPC_Controller* char1 = CombatList[CombatList.Find(npc)];
-		ANPC_Controller* char2 = CombatList[CombatList.Find(enemy)];
-	
-		//TODO add bool restraint so that npcs can only roll once the other is done attacking
+		ANPC* char1 = CombatList[CombatList.Find(npc)];
+		ANPC* char2 = CombatList[CombatList.Find(enemy)];
 		
 		if (!char1->GetCanAttack() && !char2->GetCanAttack())
 		{
@@ -63,9 +61,7 @@ void UCombat::Attack(AAI_Controller* npc, AAI_Controller* enemy)
 	}
 	
 }
-*/
 
-
-//TODO make whether a npc dependent on whether their opponent is now attacking, npc not attcking should be on standby until enemy finishes their roll
+//TODO NPCs take turns attacking based on bool of canAttack, in future base bool on when animation ends
 
 

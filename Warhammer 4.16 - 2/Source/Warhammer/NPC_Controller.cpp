@@ -3,6 +3,7 @@
 #include "Warhammer.h"
 #include "NPC.h"
 #include "NPCMovementComponent.h"
+#include "Combat.h"
 #include "NPC_Controller.h"
 
 // Sets default values
@@ -87,16 +88,20 @@ void ANPC_Controller::StateMove()
 
 void ANPC_Controller::StateAttack()
 {
-	/*
-	if (npcHealth > 0 && enemyTarget->npcHealth > 0)
+	
+	if (npc->npcHealth > 0 && npc->movementComponent->enemyTarget->npcHealth > 0)
 	{
-		UCombat::Attack(npc, enemyTarget);
-	}*/
+		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
+	}
+	if (npc->npcHealth <= 0)
+	{
+		SetState(ENPCStates::DIE);
+	}
 }
 
 void ANPC_Controller::StateDie()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("%s is dead"), *npc->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("%s is dead"), *npc->GetName());
 }
 
 

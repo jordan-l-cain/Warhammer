@@ -33,9 +33,7 @@ void ANPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-//TODO NPC which sets the variables, from the type to the health and movespeed. 
-
-ENPCClass ANPC::GetNPCType()
+ENPCType ANPC::GetNPCType()
 {
 	return npcType;
 }
@@ -51,7 +49,6 @@ void ANPC::ModHealth(float modifier)
 	if (npcHealth <= 0)
 	{
 		npcHealth = 0;
-		//SetState(ENPCStates::DIE);
 	}
 }
 

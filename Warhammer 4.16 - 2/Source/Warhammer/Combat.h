@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "Combat.generated.h"
 
-class ANPC_Controller;
+class ANPC;
 
 /**
  * This class will handle the combat systems for all npcs. 
@@ -21,15 +21,15 @@ public:
 	// Sets default values for this pawn's properties
 	UCombat();
 
-	/*
+	
 	//Starter Combat Function
-	static void Attack(ANPC_Controller* npc, ANPC_Controller* enemy);
+	static void Attack(ANPC* npc, ANPC* enemy);
 
-	ANPC_Controller* char_combat1 = nullptr;
-	ANPC_Controller* char_combat2 = nullptr;
+	ANPC* char_combat1 = nullptr;
+	ANPC* char_combat2 = nullptr;
 
-	static TArray<ANPC_Controller*> CombatList;
-	*/
+	static TArray<ANPC*> CombatList;
+	
 private:
 
 

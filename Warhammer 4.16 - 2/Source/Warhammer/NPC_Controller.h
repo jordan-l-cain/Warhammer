@@ -63,9 +63,5 @@ private:
 
 	void StateDie();
 
-	
-
 };
-
-//TODO Transform movement and combat to use the NPC Controller instead of AI_Controller
 

@@ -9,7 +9,7 @@
 class UNPCMovementComponent;
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class ENPCClass : uint8
+enum class ENPCType : uint8
 {
 	Dwarf1 UMETA(DisplayName = "Dwarf"),
 	Greenskin1 UMETA(DisplayName = "Greenskin"),
@@ -32,7 +32,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	float npcHealth;
 
-	//TODO change to a float value affected by stats?
+	//TODO change to a float value affected by stats? For use with roll rather than simple 50-50
 	//Boolean that determines who can attack, read/set by combat class 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC Settings")
 	bool canAttack = false;
@@ -53,21 +53,22 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Enum used to set a npc type that is readable by the movement script, so it may determine it's actions
-	ENPCClass npcType;
+	ENPCType npcType;
 
 	// Return function that will allow the movement script to determine the npc type
-	ENPCClass GetNPCType();
+	ENPCType GetNPCType();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//This instance of ANPC
 	ANPC* npc;
 
+	//Read function for canAttack boolean
+	bool GetCanAttack();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	//Read function for canAttack boolean
-	bool GetCanAttack();
 
 public:	
 	// Called every frame
