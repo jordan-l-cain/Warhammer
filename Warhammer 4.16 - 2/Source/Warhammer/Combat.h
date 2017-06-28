@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "Combat.generated.h"
 
-class AAI_Controller;
+class ANPC_Controller;
 
 /**
  * This class will handle the combat systems for all npcs. 
@@ -23,12 +23,12 @@ public:
 
 	/*
 	//Starter Combat Function
-	static void Attack(AAI_Controller* npc, AAI_Controller* enemy);
+	static void Attack(ANPC_Controller* npc, ANPC_Controller* enemy);
 
-	AAI_Controller* char_combat1 = nullptr;
-	AAI_Controller* char_combat2 = nullptr;
+	ANPC_Controller* char_combat1 = nullptr;
+	ANPC_Controller* char_combat2 = nullptr;
 
-	static TArray<AAI_Controller*> CombatList;
+	static TArray<ANPC_Controller*> CombatList;
 	*/
 private:
 

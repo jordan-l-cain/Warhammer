@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Warhammer.h"
-#include "AI_Controller.h"
+#include "NPC_Controller.h"
 #include "Combat.h"
 
 //TArray<AAI_Controller*> UCombat::CombatList;
@@ -30,8 +30,8 @@ void UCombat::Attack(AAI_Controller* npc, AAI_Controller* enemy)
 
 	if (CombatList.Contains(npc) && CombatList.Contains(enemy))
 	{
-		AAI_Controller* char1 = CombatList[CombatList.Find(npc)];
-		AAI_Controller* char2 = CombatList[CombatList.Find(enemy)];
+		ANPC_Controller* char1 = CombatList[CombatList.Find(npc)];
+		ANPC_Controller* char2 = CombatList[CombatList.Find(enemy)];
 	
 		//TODO add bool restraint so that npcs can only roll once the other is done attacking
 		
