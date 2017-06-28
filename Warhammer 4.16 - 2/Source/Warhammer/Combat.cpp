@@ -4,47 +4,48 @@
 #include "AI_Controller.h"
 #include "Combat.h"
 
-TArray<AAI_Controller*> UCombat::CombatList;
+//TArray<AAI_Controller*> UCombat::CombatList;
 
 UCombat::UCombat()
 {
 	
 }
-
-void UCombat::Attack(AAI_Controller* character, AAI_Controller* enemy)
+/*
+void UCombat::Attack(AAI_Controller* npc, AAI_Controller* enemy)
 {
-	if (!ensure(character) || !ensure(enemy))
+	
+	if (!ensure(npc) || !ensure(enemy))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("The Character or Enemy is null"));
+		UE_LOG(LogTemp, Warning, TEXT("The NPC or Enemy is null"));
 		return;
 	}
 	
 	float randomNumber = FMath::RandRange(0, 2);
 	
-	if (!CombatList.Contains(character))
+	if (!CombatList.Contains(npc))
 	{
-		CombatList.Add(character);
-		UE_LOG(LogTemp, Warning, TEXT("%s was added to the array"), *character->GetName());
+		CombatList.Add(npc);
+		UE_LOG(LogTemp, Warning, TEXT("%s was added to the array"), *npc->GetName());
 	}
 
-	if (CombatList.Contains(character) && CombatList.Contains(enemy))
+	if (CombatList.Contains(npc) && CombatList.Contains(enemy))
 	{
-		AAI_Controller* char1 = CombatList[CombatList.Find(character)];
+		AAI_Controller* char1 = CombatList[CombatList.Find(npc)];
 		AAI_Controller* char2 = CombatList[CombatList.Find(enemy)];
 	
-		//TODO add bool restraint so that characters can only roll once the other is done attacking
+		//TODO add bool restraint so that npcs can only roll once the other is done attacking
 		
 		if (!char1->GetCanAttack() && !char2->GetCanAttack())
 		{
 			if (randomNumber > 1)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("The Character %s will attack"), *character->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("The NPC %s will attack"), *npc->GetName());
 				char1->ModCanAttack(true);
 			}
 
 			if (randomNumber <= 1)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("The Character %s will attack"), *enemy->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("The NPC %s will attack"), *enemy->GetName());
 				char2->ModCanAttack(true);
 			}
 		}
@@ -60,9 +61,11 @@ void UCombat::Attack(AAI_Controller* character, AAI_Controller* enemy)
 			char2->ModCanAttack(false);
 		}
 	}
+	
 }
+*/
 
 
-//TODO make whether a character dependent on whether their opponent is now attacking, character not attcking should be on standby until enemy finishes their roll
+//TODO make whether a npc dependent on whether their opponent is now attacking, npc not attcking should be on standby until enemy finishes their roll
 
 

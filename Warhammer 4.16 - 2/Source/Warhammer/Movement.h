@@ -5,9 +5,9 @@
 #include "GameFramework/Pawn.h"
 #include "Movement.generated.h"
 
-class AAI_Controller;
+class ANPC_Controller;
 
-UCLASS()
+UCLASS(Blueprintable)
 class WARHAMMER_API AMovement : public APawn
 {
 	GENERATED_BODY()
@@ -17,9 +17,9 @@ public:
 	AMovement();
 
 	// Function that handles movement of AI
-	void MoveAI(AAI_Controller* character, TArray<AActor*> OverlappingActors);
+	void MoveAI(ANPC_Controller* npc, TArray<AActor*> OverlappingActors);
 
-	//Boolean that's used to determine when two characters have targeted eachother for attack
+	//Boolean that's used to determine when two npcs have targeted eachother for attack
 	bool targeted = false;
 
 protected:
@@ -35,7 +35,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//Reference pointer to the enemy that is within the minimum distance
-	AAI_Controller* enemyTarget = nullptr;
+	ANPC_Controller* enemyTarget = nullptr;
 
 	//Value for movement speed
 	float moveSpeed = 10.0;
@@ -47,11 +47,11 @@ private:
 	//Used to store distance between two objects
 	float distanceLength;
 
-	//Distance used strictly between character and enemyTarget
+	//Distance used strictly between npc and enemyTarget
 	float targetDistanceLength;
 	
 	//Array used to store individual overlapping actors so they may be cast
-	TArray<AAI_Controller*> otherChars;
+	TArray<ANPC_Controller*> otherChars;
 
 	//FVector used for movement direction
 	FVector moveDirection;

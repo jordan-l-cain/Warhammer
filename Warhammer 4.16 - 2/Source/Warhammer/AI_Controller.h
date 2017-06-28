@@ -6,13 +6,14 @@
 #include "GameFramework/Controller.h"
 #include "AI_Controller.generated.h"
 
-UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class ECharacterType : uint8
+//UENUM(BlueprintType)		//"BlueprintType" is essential to include
+/*enum class ENPCType : uint8
 {
 	Dwarf UMETA(DisplayName = "Dwarf"),
 	Greenskin UMETA(DisplayName = "Greenskin"),
 	Enemy	UMETA(DisplayName = "Enemy")
 };
+*/
 
 enum class AIStates : uint8
 {
@@ -34,7 +35,7 @@ public:
 
 	// Sets default values for this pawn's properties
 	AAI_Controller();
-
+	/*
 protected:
 
 	// Called when the game starts or when spawned
@@ -42,24 +43,24 @@ protected:
 
 	//TMap<AIStates, UFunction> AIStatesDictionary;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
-	//Enum used to set a character type that is readable by the movement script, so it may determine it's actions
-	ECharacterType characterType;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//Enum used to set a npc type that is readable by the movement script, so it may determine it's actions
+	//ENPCType npcType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
-	AAI_Controller* character;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	AAI_Controller* npc;
 
 	//Array used to store all nearby actors
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	TArray<AActor*> OverlappingActors;
 
-	//Character Health
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Settings")
-	float characterHealth;
+	//NPC Health
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	float npcHealth;
 
 	//TODO change to a float value affected by stats?
 	//Boolean that determines who can attack, read/set by combat class 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC Settings")
 	bool canAttack = false;
 
 public:
@@ -70,13 +71,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// Return function that will allow the movement script to determine the character type
-	ECharacterType GetCharacterType();
+	// Return function that will allow the movement script to determine the npc type
+	//ENPCType GetNPCType();
 
 	//Current state the AI is in
 	AIStates curState;
 
-	//Function that adjusts character health
+	//Function that adjusts npc health
 	void ModHealth(float modifier);
 
 	//Set function for canAttack boolean
@@ -98,6 +99,6 @@ private:
 
 	void StateDie();
 
-	
+	*/
 	
 };

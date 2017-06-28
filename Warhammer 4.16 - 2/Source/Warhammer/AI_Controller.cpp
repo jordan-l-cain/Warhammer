@@ -13,15 +13,15 @@ AAI_Controller::AAI_Controller()
 	//AIStatesDictionary.Add(AIStates::IDLE, StateIdle());
 
 }
-
+/*
 // Called when the game starts or when spawned
 void AAI_Controller::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (character)
+	if (npc)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s is the character"), *character->GetName())
+		UE_LOG(LogTemp, Warning, TEXT("%s is the npc"), *npc->GetName())
 	}
 	
 	SetState(AIStates::IDLE);
@@ -62,22 +62,22 @@ void AAI_Controller::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-ECharacterType AAI_Controller::GetCharacterType()
+ENPCType AAI_Controller::GetNPCType()
 {
-	return characterType;
+	return npcType;
 }
 
 void AAI_Controller::ModHealth(float modifier)
 {
-	if (characterHealth > 0)
+	if (npcHealth > 0)
 	{
-		characterHealth += modifier;
-		UE_LOG(LogTemp, Warning, TEXT("%s's health is %f"), *character->GetName(), characterHealth);
+		npcHealth += modifier;
+		UE_LOG(LogTemp, Warning, TEXT("%s's health is %f"), *npc->GetName(), npcHealth);
 
 	}
-	if (characterHealth <= 0)
+	if (npcHealth <= 0)
 	{
-		characterHealth = 0;
+		npcHealth = 0;
 		SetState(AIStates::DIE);
 	}
 }
@@ -105,7 +105,7 @@ void AAI_Controller::StateIdle()
 
 void AAI_Controller::StateMove()
 {
-	MoveAI(character, OverlappingActors);
+	MoveAI(npc, OverlappingActors);
 
 	if (moveSpeed <= 0)
 	{
@@ -116,14 +116,14 @@ void AAI_Controller::StateMove()
 
 void AAI_Controller::StateAttack()
 {
-	if (characterHealth > 0 && enemyTarget->characterHealth > 0)
+	if (npcHealth > 0 && enemyTarget->npcHealth > 0)
 	{
-		UCombat::Attack(character, enemyTarget);
+		UCombat::Attack(npc, enemyTarget);
 	}
 }
 
 void AAI_Controller::StateDie()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s is dead"), *character->GetName());
-	return;
+	UE_LOG(LogTemp, Warning, TEXT("%s is dead"), *npc->GetName());
 }
+*/

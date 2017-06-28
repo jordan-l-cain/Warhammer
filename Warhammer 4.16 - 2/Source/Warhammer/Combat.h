@@ -9,7 +9,7 @@
 class AAI_Controller;
 
 /**
- * This class will handle the combat systems for all characters. 
+ * This class will handle the combat systems for all npcs. 
  */
 UCLASS()
 class WARHAMMER_API UCombat : public UObject
@@ -21,14 +21,15 @@ public:
 	// Sets default values for this pawn's properties
 	UCombat();
 
+	/*
 	//Starter Combat Function
-	static void Attack(AAI_Controller* character, AAI_Controller* enemy);
+	static void Attack(AAI_Controller* npc, AAI_Controller* enemy);
 
 	AAI_Controller* char_combat1 = nullptr;
 	AAI_Controller* char_combat2 = nullptr;
 
 	static TArray<AAI_Controller*> CombatList;
-
+	*/
 private:
 
 
