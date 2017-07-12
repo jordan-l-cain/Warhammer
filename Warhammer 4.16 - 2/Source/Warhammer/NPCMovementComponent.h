@@ -37,6 +37,15 @@ public:
 	//Value for movement speed
 	float moveSpeed = 10.0;
 
+	float originalSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//Array used to store individual overlapping actors so they may be cast
+	TArray<ANPC*> otherChars;
+
+	//Bool used to determine when two npc's can fight
+	bool confrontation;
+
 
 private:
 
@@ -48,9 +57,9 @@ private:
 	//Distance used strictly between npc and enemyTarget
 	float targetDistanceLength;
 
-	//Array used to store individual overlapping actors so they may be cast
-	TArray<ANPC*> otherChars;
-
 	//FVector used for movement direction
 	FVector moveDirection;
+	
+	//Used to reset the npc's rotation
+	FRotator originalRotation;
 };

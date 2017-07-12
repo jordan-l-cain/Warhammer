@@ -20,8 +20,6 @@ void UCombat::Attack(ANPC* npc, ANPC* enemy)
 		return;
 	}
 	
-	float randomNumber = FMath::RandRange(0, 2);
-	
 	if (!CombatList.Contains(npc))
 	{
 		CombatList.Add(npc);
@@ -32,35 +30,59 @@ void UCombat::Attack(ANPC* npc, ANPC* enemy)
 	{
 		ANPC* char1 = CombatList[CombatList.Find(npc)];
 		ANPC* char2 = CombatList[CombatList.Find(enemy)];
+
+		float attackRoll1 = FMath::RandRange(0, 10);
+		float attackRoll2 = FMath::RandRange(0, 10);
+		float defenseRoll1 = FMath::RandRange(0, 10);
+		float defenseRoll2 = FMath::RandRange(0, 10);
 		
 		if (!char1->GetCanAttack() && !char2->GetCanAttack())
 		{
-			if (randomNumber > 1)
+			if ((attackRoll1 + char1->attack)  > (attackRoll2 + char2->attack))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("The NPC %s will attack"), *npc->GetName());
-				char1->ModCanAttack(true);
+				//UE_LOG(LogTemp, Warning, TEXT("The NPC %s will attack, their roll was %f and their opponent rolled %f"), *char1->GetName(), (attackRoll1 + char1->attack), (attackRoll2 + char2->attack));
+
+				if ((attackRoll1 + char1->attack) > (defenseRoll2 + char2->attack))
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("%s hits, their attack roll was %f and their opponent rolled %f"), *char1->GetName(), (attackRoll1 + char1->attack), (defenseRoll2 + char2->attack));
+
+					char1->ModCanAttack(true);
+				} else
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("The enemy %s blocked the attack"), *char2->GetName());
+				}
 			}
 
-			if (randomNumber <= 1)
+			if ((attackRoll1 + char1->attack)  < (attackRoll2 + char2->attack))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("The NPC %s will attack"), *enemy->GetName());
-				char2->ModCanAttack(true);
+				//UE_LOG(LogTemp, Warning, TEXT("The NPC %s will attack, their roll was %f and their opponent rolled %f"), *char2->GetName(), (attackRoll2 + char2->attack), (attackRoll1 + char1->attack));
+
+				if ((attackRoll2 + char2->attack) > (defenseRoll1 + char1->attack))
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("%s hits, their attack roll was %f and their opponent rolled %f"), *char2->GetName(), (attackRoll2 + char2->attack), (defenseRoll1 + char1->attack));
+
+					char2->ModCanAttack(true);
+				} else
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("The enemy %s blocked the attack"), *char1->GetName());
+				}
 			}
 		}
 
 		if (char1->GetCanAttack())
 		{
-			char2->ModHealth(-1);
+			char2->ModHealth(-char1->strength);
 			char1->ModCanAttack(false);
 		}
 		if (char2->GetCanAttack())
 		{
-			char1->ModHealth(-1);
+			char1->ModHealth(-char2->strength);
 			char2->ModCanAttack(false);
 		}
 	}
 	
 }
+
 
 //TODO NPCs take turns attacking based on bool of canAttack, in future base bool on when animation ends
 

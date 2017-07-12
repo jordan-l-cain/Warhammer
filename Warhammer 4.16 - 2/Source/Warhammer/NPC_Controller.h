@@ -8,6 +8,7 @@
 
 class ANPC;
 class UNPCMovementComponent;
+class AWarhammerGameModeBase;
 
 enum class ENPCStates : uint8
 {
@@ -34,21 +35,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//ANPC class instance
 	ANPC* npc;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//GameMode instance used to access global variables such as dead dwarf and greenskin count
+	AWarhammerGameModeBase* GameMode;
 
 protected:
 	
 	UFUNCTION(BlueprintCallable, Category= "Functions")
 	void Play();
 
-
-	//Current state the AI is in
-	ENPCStates curState;
-
-public:
-
 	UFUNCTION(BlueprintCallable, Category = "Functions")
 	// Called every frame
 	void Tick(float DeltaTime);
+
+	//Current state the AI is in
+	ENPCStates curState;
 
 private:
 

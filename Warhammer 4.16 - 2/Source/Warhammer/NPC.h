@@ -11,9 +11,9 @@ class UNPCMovementComponent;
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class ENPCType : uint8
 {
-	Dwarf1 UMETA(DisplayName = "Dwarf"),
-	Greenskin1 UMETA(DisplayName = "Greenskin"),
-	Enemy1	UMETA(DisplayName = "Enemy")
+	Dwarf UMETA(DisplayName = "Dwarf"),
+	Greenskin UMETA(DisplayName = "Greenskin"),
+	Enemy	UMETA(DisplayName = "Enemy")
 };
 
 /**
@@ -32,10 +32,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	float npcHealth;
 
-	//TODO change to a float value affected by stats? For use with roll rather than simple 50-50
 	//Boolean that determines who can attack, read/set by combat class 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC Settings")
 	bool canAttack = false;
+
+	//Strength Stat, which determines amount of damage done to enemy
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	float strength;
+
+	//Attack Stat, which determines who is more likely to attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	float attack;
+
+	//Defense Stat, which determines blocking/dodging capability
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	float defense;
 
 	//Function that adjusts npc health
 	void ModHealth(float modifier);
@@ -58,12 +69,27 @@ public:
 	// Return function that will allow the movement script to determine the npc type
 	ENPCType GetNPCType();
 
+	// Returns ENPCType of Dwarf for comparison
+	ENPCType GetDwarfType();
+
+	// Returns ENPCType of Dwarf for comparison
+	ENPCType GetGreenskinType();
+
+	// Returns ENPCType of Dwarf for comparison
+	ENPCType GetEnemyType();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//This instance of ANPC
 	ANPC* npc;
 
 	//Read function for canAttack boolean
 	bool GetCanAttack();
+
+	bool dwarf = false;
+	bool greenskin = false;
+
+	//Boolean used to determine if this npc is dead.
+	bool isDead = false;
 
 protected:
 	// Called when the game starts or when spawned

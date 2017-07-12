@@ -17,6 +17,14 @@ ANPC::ANPC(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer
 void ANPC::BeginPlay()
 {
 	Super::BeginPlay();
+	if (npcType == ENPCType::Dwarf)
+	{
+		dwarf = true;
+	}
+	if (npcType == ENPCType::Greenskin)
+	{
+		greenskin = true;
+	}
 }
 
 // Called every frame
@@ -38,14 +46,29 @@ ENPCType ANPC::GetNPCType()
 	return npcType;
 }
 
+ENPCType ANPC::GetDwarfType()
+{
+	return ENPCType::Dwarf;
+}
+
+ENPCType ANPC::GetGreenskinType()
+{
+	return ENPCType::Greenskin;
+}
+
+ENPCType ANPC::GetEnemyType()
+{
+	return ENPCType::Enemy;
+}
+
 void ANPC::ModHealth(float modifier)
 {
 	if (npcHealth > 0)
 	{
 		npcHealth += modifier;
-		UE_LOG(LogTemp, Warning, TEXT("%s's health is %f"), *npc->GetName(), npcHealth);
-
+		///UE_LOG(LogTemp, Warning, TEXT("%s's health is %f"), *npc->GetName(), npcHealth);
 	}
+
 	if (npcHealth <= 0)
 	{
 		npcHealth = 0;

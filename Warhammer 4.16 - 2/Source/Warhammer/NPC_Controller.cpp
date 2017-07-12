@@ -4,6 +4,7 @@
 #include "NPC.h"
 #include "NPCMovementComponent.h"
 #include "Combat.h"
+#include "WarhammerGameModeBase.h"
 #include "NPC_Controller.h"
 
 // Sets default values
@@ -26,7 +27,7 @@ void ANPC_Controller::Play()
 	{
 		return;
 	}
-
+	
 }
 
 // Called every frame
@@ -66,11 +67,11 @@ void ANPC_Controller::StateIdle()
 	UE_LOG(LogTemp, Warning, TEXT("AI is idling"));
 	if (ensure(npc->movementComponent))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Movement Component is set, setting state to move"));
+		///UE_LOG(LogTemp, Warning, TEXT("Movement Component is set, setting state to move"));
 		SetState(ENPCStates::MOVE);
 	} else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Movement Component is not set (check this classes BP"));
+		UE_LOG(LogTemp, Warning, TEXT("Movement Component is not set (check this classes BP)"));
 		return;
 	}
 }
@@ -79,29 +80,61 @@ void ANPC_Controller::StateMove()
 {
 	npc->movementComponent->MoveAI(npc->npc, npc->OverlappingActors);
 	
-	if (npc->movementComponent->moveSpeed <= 0)
+	if (npc->movementComponent->confrontation)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Set State to attack"));
+		///UE_LOG(LogTemp, Warning, TEXT("Set State to attack"));
 		SetState(ENPCStates::ATTACK);
 	}
 }
 
 void ANPC_Controller::StateAttack()
 {
-	
-	if (npc->npcHealth > 0 && npc->movementComponent->enemyTarget->npcHealth > 0)
+	if (!npc->movementComponent->enemyTarget)
 	{
-		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
+		npc->movementComponent->moveSpeed = 10;
+		npc->movementComponent->confrontation = false;
+		npc->movementComponent->targeted = false;
+		SetState(ENPCStates::IDLE);
 	}
+
 	if (npc->npcHealth <= 0)
 	{
 		SetState(ENPCStates::DIE);
+
+	}else if (npc->movementComponent->confrontation && npc->npcHealth > 0 && ensure(npc->movementComponent->enemyTarget) && npc->movementComponent->enemyTarget->npcHealth > 0)
+	{
+		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
 	}
 }
 
 void ANPC_Controller::StateDie()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s is dead"), *npc->GetName());
+	//Changes this npc's death bool to true so that anyone colliding with/any arrays it's in will read it's dead, then ignore or remove it.
+	//Also sets the enemyTarget of the npc that targeted this one to null, so that npc will reset to Idle.
+
+	if (npc->dwarf)
+	{
+		GameMode->deadDwarfs += 1;
+		AWarhammerGameModeBase::PrintKills(GameMode->deadDwarfs, GameMode->deadGreenskins);
+	}
+	if (npc->greenskin)
+	{
+		GameMode->deadGreenskins += 1;
+		AWarhammerGameModeBase::PrintKills(GameMode->deadDwarfs, GameMode->deadGreenskins);
+	}
+
+	npc->isDead = true;
+	npc->movementComponent->enemyTarget->movementComponent->enemyTarget = nullptr;
+	SetActorEnableCollision(false);
+	SetActorTickEnabled(false);
+	/*
+	if (npc->movementComponent->otherChars.Contains(npc))
+	{
+		npc->movementComponent->otherChars.Remove(npc);
+	}*/
+	
 }
 
+//TODO test combat with multiple npcs to fine tune stats, get static ints working
+//TODO get npc to continue after killing a target
 
