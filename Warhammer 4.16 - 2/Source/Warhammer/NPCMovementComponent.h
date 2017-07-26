@@ -8,6 +8,14 @@
 
 class ANPC;
 
+enum class EMoveStates : uint8
+{
+	NULLMOVE UMETA(DisplayName = "Null"),
+	FOLLOW UMETA(DisplayName = "Follow"),
+	MOVETOENEMY UMETA(DisplayName = "MoveToEnemy"),
+	MOVETOLOCATION UMETA(DisplayName = "MoveToLocation")
+};
+
 /**
  * This class controls all NPC Movement
  */
@@ -35,9 +43,15 @@ public:
 	ANPC* enemyTarget = nullptr;
 
 	//Value for movement speed
-	float moveSpeed = 10.0;
+	bool canMove = true;
 
 	float originalSpeed;
+
+	//Used to limit the followers move to calls
+	float timer = 50;
+
+	//Index of this follower in their leader's array, used to determine location in formation
+	int followerIndex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Array used to store individual overlapping actors so they may be cast
@@ -46,6 +60,20 @@ public:
 	//Bool used to determine when two npc's can fight
 	bool confrontation;
 
+	//Enum variable defining the current movement state
+	EMoveStates curMoveState = EMoveStates::NULLMOVE;
+
+	//Return function that will return the Follow state
+	EMoveStates GetFollowState();
+
+	//Return function that will return the Move To Enemy state
+	EMoveStates GetMoveToEnemyState();
+
+	//Return function that will return the Move To Location state
+	EMoveStates GetMoveToLocationState();
+
+	//Function that sets the default state of the switch for the movement states
+	void SetDefaultState(EMoveStates defaultState);
 
 private:
 
@@ -62,4 +90,16 @@ private:
 	
 	//Used to reset the npc's rotation
 	FRotator originalRotation;
+
+	//Enum Variable used for the default state
+	EMoveStates defaultState;
+
+	//Follow function, which will make AI follow a target
+	void Follow(ANPC* npc);
+
+	//Move To Enemy function
+	void MoveToEnemy(ANPC* npc, TArray<AActor*> OverlappingActors);
+
+	//Move To Location function, which is where leaders will decide where to move to, be it a location or towards an enemy
+	void MoveToLocation();
 };

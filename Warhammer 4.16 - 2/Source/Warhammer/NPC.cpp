@@ -17,13 +17,52 @@ ANPC::ANPC(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer
 void ANPC::BeginPlay()
 {
 	Super::BeginPlay();
-	if (npcType == ENPCType::Dwarf)
+
+	if (npcRace == ENPCRace::Dwarf)
 	{
 		dwarf = true;
+
+		if (GetNPCType() == GetChampionType())
+		{
+			for (TActorIterator<ANPC> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+			{
+				ANPC *actor = *ActorItr;
+
+				if ((actor->GetNPCRace() == actor->GetDwarfRace()) && (actor->GetNPCType() == actor->GetCommonType()))
+				{
+					if (!followers.Contains(actor) && followers.Num() < 3 && !actor->leader)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("%s: Adding %s to my array."), *npc->GetName(), *actor->GetName());
+						actor->leader = npc;
+						followers.Add(actor);
+						actor->movementComponent->followerIndex = followers.IndexOfByKey(actor);
+					}
+				}
+			}
+		}
 	}
-	if (npcType == ENPCType::Greenskin)
+
+	if (npcRace == ENPCRace::Greenskin)
 	{
 		greenskin = true;
+
+		if (GetNPCType() == GetChampionType())
+		{
+			for (TActorIterator<ANPC> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+			{
+				ANPC *actor = *ActorItr;
+
+				if ((actor->GetNPCRace() == actor->GetGreenskinRace()) && (actor->GetNPCType() == actor->GetCommonType()))
+				{
+					if (!followers.Contains(actor) && followers.Num() < 3 && !actor->leader)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("%s: Adding %s to my array."), *npc->GetName(), *actor->GetName());
+						actor->leader = npc;
+						followers.Add(actor);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -41,24 +80,39 @@ void ANPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+ENPCRace ANPC::GetNPCRace()
+{
+	return npcRace;
+}
+
+ENPCRace ANPC::GetDwarfRace()
+{
+	return ENPCRace::Dwarf;
+}
+
+ENPCRace ANPC::GetGreenskinRace()
+{
+	return ENPCRace::Greenskin;
+}
+
+ENPCRace ANPC::GetEnemyRace()
+{
+	return ENPCRace::Enemy;
+}
+
 ENPCType ANPC::GetNPCType()
 {
 	return npcType;
 }
 
-ENPCType ANPC::GetDwarfType()
+ENPCType ANPC::GetChampionType()
 {
-	return ENPCType::Dwarf;
+	return ENPCType::CHAMPION;
 }
 
-ENPCType ANPC::GetGreenskinType()
+ENPCType ANPC::GetCommonType()
 {
-	return ENPCType::Greenskin;
-}
-
-ENPCType ANPC::GetEnemyType()
-{
-	return ENPCType::Enemy;
+	return ENPCType::COMMON;
 }
 
 void ANPC::ModHealth(float modifier)
@@ -84,3 +138,21 @@ bool ANPC::GetCanAttack()
 {
 	return canAttack;
 }
+
+
+
+/*
+
+	//npc has two enums, race and type
+		//type denotes whether the NPC is a champion, or a common npc
+
+	//boolean determing whether an NPC is a leader or follower
+		//standalone from the leader variable so leaders can also follow a leader, and can set different distances apart
+
+	//ENPC variable to store this npc's leader
+		//if leader is not null, then set move state to follow
+
+	//leader array
+		// only used when npc becomes a leader
+
+*/

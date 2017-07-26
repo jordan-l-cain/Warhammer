@@ -78,7 +78,19 @@ void ANPC_Controller::StateIdle()
 
 void ANPC_Controller::StateMove()
 {
-	npc->movementComponent->MoveAI(npc->npc, npc->OverlappingActors);
+	if (npc->npcType == npc->GetCommonType())
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Common Type called"))
+		npc->movementComponent->SetDefaultState(npc->movementComponent->GetFollowState());
+		npc->movementComponent->MoveAI(npc->npc, npc->OverlappingActors);
+	}
+
+	if (npc->npcType == npc->GetChampionType())
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Champion Type called"))
+		npc->movementComponent->SetDefaultState(npc->movementComponent->GetMoveToEnemyState());
+		npc->movementComponent->MoveAI(npc->npc, npc->OverlappingActors);
+	}
 	
 	if (npc->movementComponent->confrontation)
 	{
@@ -91,7 +103,7 @@ void ANPC_Controller::StateAttack()
 {
 	if (!npc->movementComponent->enemyTarget)
 	{
-		npc->movementComponent->moveSpeed = 10;
+		npc->movementComponent->canMove = true;
 		npc->movementComponent->confrontation = false;
 		npc->movementComponent->targeted = false;
 		SetState(ENPCStates::IDLE);

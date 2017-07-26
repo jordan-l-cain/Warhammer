@@ -7,13 +7,21 @@
 #include "NPC.generated.h"
 
 class UNPCMovementComponent;
+class ANPC_Controller;
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class ENPCType : uint8
+enum class ENPCRace : uint8
 {
 	Dwarf UMETA(DisplayName = "Dwarf"),
 	Greenskin UMETA(DisplayName = "Greenskin"),
 	Enemy	UMETA(DisplayName = "Enemy")
+};
+
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
+enum class ENPCType : uint8
+{
+	CHAMPION UMETA(DisplayName = "Champion"),
+	COMMON UMETA(DisplayName = "Common")
 };
 
 /**
@@ -48,6 +56,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	float defense;
 
+	//Read function for canAttack boolean
+	bool GetCanAttack();
+
+	bool dwarf = false;
+	bool greenskin = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//Boolean used to check if NPC is considered a leader
+	bool isLeader = false;
+
+	//Boolean used to determine if this npc is dead.
+	bool isDead = false;
+
 	//Function that adjusts npc health
 	void ModHealth(float modifier);
 
@@ -58,38 +79,56 @@ public:
 	//Array used to store all nearby actors
 	TArray<AActor*> OverlappingActors;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Movement Component
 	UNPCMovementComponent* movementComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//AI Controller
+	ANPC_Controller* npcController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Enum used to set a npc type that is readable by the movement script, so it may determine it's actions
-	ENPCType npcType;
+	ENPCRace npcRace;
 
 	// Return function that will allow the movement script to determine the npc type
+	ENPCRace GetNPCRace();
+
+	// Returns ENPCRace of Dwarf for comparison
+	ENPCRace GetDwarfRace();
+
+	// Returns ENPCRace of Dwarf for comparison
+	ENPCRace GetGreenskinRace();
+
+	// Returns ENPCRace of Dwarf for comparison
+	ENPCRace GetEnemyRace();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//Enum used to set the type this NPC is
+	ENPCType npcType;
+
+	// Returns the ENPCType
 	ENPCType GetNPCType();
 
-	// Returns ENPCType of Dwarf for comparison
-	ENPCType GetDwarfType();
+	// Returns ENPCType of Champion for comparison
+	ENPCType GetChampionType();
 
-	// Returns ENPCType of Dwarf for comparison
-	ENPCType GetGreenskinType();
-
-	// Returns ENPCType of Dwarf for comparison
-	ENPCType GetEnemyType();
+	// Returns ENPCType of Common for comparison
+	ENPCType GetCommonType();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//This instance of ANPC
 	ANPC* npc;
 
-	//Read function for canAttack boolean
-	bool GetCanAttack();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//ANPC variable used to store this npc's leader, if it has one
+	ANPC* leader;
 
-	bool dwarf = false;
-	bool greenskin = false;
+	//This array is used only by a leader to find and set followers
+	TArray<ANPC*> followers;
 
-	//Boolean used to determine if this npc is dead.
-	bool isDead = false;
+	//Location used to set the center of a battle between two goups
+	FVector battleLocation;
 
 protected:
 	// Called when the game starts or when spawned

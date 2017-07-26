@@ -5,6 +5,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "WarhammerGameModeBase.generated.h"
 
+class ANPC;
+
 /**
  * 
  */
@@ -16,6 +18,9 @@ class WARHAMMER_API AWarhammerGameModeBase : public AGameModeBase
 	
 public:
 
+	//Array of all leaders in the game.
+	static TArray<ANPC*> LeaderList;
+
 	//Attack Stat, which determines who is more likely to attack
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Global Variables")
 	int deadDwarfs;
@@ -25,4 +30,8 @@ public:
 	int deadGreenskins;
 
 	static void PrintKills(int a, int b);
+
+	//Function used to find all designated leaders at the start of the game.
+	UFUNCTION(BlueprintCallable, Category = "Functions")
+	void PopulateLeaderList();
 };
