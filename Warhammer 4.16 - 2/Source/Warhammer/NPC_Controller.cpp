@@ -88,7 +88,7 @@ void ANPC_Controller::StateMove()
 	if (npc->npcType == npc->GetChampionType())
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Champion Type called"))
-		npc->movementComponent->SetDefaultState(npc->movementComponent->GetMoveToEnemyState());
+		npc->movementComponent->SetDefaultState(npc->movementComponent->GetMoveToLocationState());
 		npc->movementComponent->MoveAI(npc->npc, npc->OverlappingActors);
 	}
 	

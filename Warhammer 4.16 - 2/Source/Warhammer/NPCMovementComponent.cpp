@@ -27,7 +27,7 @@ void UNPCMovementComponent::MoveAI(ANPC* npc, TArray<AActor*> OverlappingActors)
 			break;
 
 		case EMoveStates::MOVETOLOCATION:
-			MoveToLocation();
+			MoveToLocation(npc);
 			break;
 
 		case EMoveStates::NULLMOVE:
@@ -186,9 +186,42 @@ void UNPCMovementComponent::MoveToEnemy(ANPC* npc, TArray<AActor*> OverlappingAc
 	}
 }
 
-void UNPCMovementComponent::MoveToLocation()
+void UNPCMovementComponent::MoveToLocation(ANPC* npc)
 {
-	//TODO add calculating distances of each enemy leader in the list, can call only every 2-5 seconds
+	//TODO add  call only every 2-5 seconds
+	if (!enemyLeader)
+	{
+		npc->AddMovementInput(npc->GetActorForwardVector(), 15);
+		oneTime = true;
+
+		for (auto* actor : AWarhammerGameModeBase::LeaderList)
+		{
+			if (ensure(npc) && ensure(actor))
+			{
+				if (npc->GetNPCRace() != actor->GetNPCRace())
+				{
+					FVector distance = npc->GetActorLocation() - actor->GetActorLocation();
+
+					if (distance.Size() <= 20000)
+					{
+						middlePoint = (npc->GetActorLocation() + actor->GetActorLocation()) / 2;
+						enemyLeader = actor;
+						//TODO add an alternate way for them to get to each other if the location is not on nav mesh
+						//TODO add transition to combat
+					}
+				}
+			}
+		}
+	} else if (enemyLeader && oneTime)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Moving to %s"), *middlePoint.ToString());
+
+		if (ensure(npc))
+		{
+			npc->npcController->MoveToLocation(middlePoint);
+			oneTime = false;
+		}
+	}
 }
 
 EMoveStates UNPCMovementComponent::GetFollowState()

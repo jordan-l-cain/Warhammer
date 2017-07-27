@@ -42,6 +42,9 @@ public:
 	//Reference pointer to the enemy that is within the minimum distance
 	ANPC* enemyTarget = nullptr;
 
+	//Enemy Leader target variable. Set when an enemy leader is within distance, which will create a middle point between leaders and they will move to the mutual location.
+	ANPC* enemyLeader = nullptr;
+
 	//Value for movement speed
 	bool canMove = true;
 
@@ -52,6 +55,11 @@ public:
 
 	//Index of this follower in their leader's array, used to determine location in formation
 	int followerIndex;
+
+	//Location between two enemy leaders, set when they are within distance.
+	FVector middlePoint;
+
+	bool oneTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Array used to store individual overlapping actors so they may be cast
@@ -101,5 +109,5 @@ private:
 	void MoveToEnemy(ANPC* npc, TArray<AActor*> OverlappingActors);
 
 	//Move To Location function, which is where leaders will decide where to move to, be it a location or towards an enemy
-	void MoveToLocation();
+	void MoveToLocation(ANPC* npc);
 };

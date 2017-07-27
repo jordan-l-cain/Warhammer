@@ -30,4 +30,9 @@ void AWarhammerGameModeBase::PopulateLeaderList()
 			}
 		}
 	}
+	/*
+	for (auto* actor : LeaderList)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s is a leader in the array."), *actor->GetName());
+	}*/
 }

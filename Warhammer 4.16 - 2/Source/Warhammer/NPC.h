@@ -33,6 +33,7 @@ class WARHAMMER_API ANPC : public ACharacter
 	GENERATED_BODY()
 
 public:
+
 	// Sets default values for this character's properties
 	ANPC(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
