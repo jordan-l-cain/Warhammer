@@ -80,7 +80,7 @@ void UCombat::Attack(ANPC* npc, ANPC* enemy)
 			char2->ModCanAttack(false);
 		}
 	}
-	
+	//TODO remove npc and enemy from the array once function is finished
 }
 
 

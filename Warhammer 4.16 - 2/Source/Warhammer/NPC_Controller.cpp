@@ -18,13 +18,14 @@ ANPC_Controller::ANPC_Controller()
 // Called when the game starts or when spawned
 void ANPC_Controller::Play()
 {
-	if (ensure(npc))
+	if (ensure(npc) && ensure(npc->movementComponent))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is the npc"), *npc->GetName());
 		SetState(ENPCStates::IDLE);
 
 	} else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("A Reference is not set."));
 		return;
 	}
 	
@@ -62,13 +63,103 @@ void ANPC_Controller::SetState(ENPCStates state)
 	curState = state;
 }
 
+ENPCStates ANPC_Controller::GetCurState()
+{
+	return curState;
+}
+
+ENPCStates ANPC_Controller::GetIdleState()
+{
+	return ENPCStates::IDLE;
+}
+
+ENPCStates ANPC_Controller::GetMoveState()
+{
+	return ENPCStates::MOVE;
+}
+
+ENPCStates ANPC_Controller::GetAttackState()
+{
+	return ENPCStates::ATTACK;
+}
+
+ENPCStates ANPC_Controller::GetDieState()
+{
+	return ENPCStates::DIE;
+}
+
+void ANPC_Controller::NewLeadersAndFollowers(ANPC* leader, ANPC* newLeader)
+{
+	
+	///UE_LOG(LogTemp, Warning, TEXT("%s is a leader"), *npc->GetName());
+
+	
+	//Here we iterate through the old leader's followers. If the follower is not the new leader npc, then we set the leader of the follwer to the new leader
+	//and we add that follower to the new leader's followers
+	for (auto* oldFollower : leader->followers)
+	{
+		if (!newLeader->followers.Contains(oldFollower) && oldFollower != newLeader && !oldFollower->isDead)
+		{
+			oldFollower->leader = newLeader;
+			newLeader->followers.Add(oldFollower);
+		}
+	}
+	
+	newLeader->waypoint = leader->waypoint;
+	
+	if (leader->leader)
+	{
+		newLeader->leader = leader->leader;
+	} else
+	{
+		newLeader->leader = nullptr;
+	}
+
+
+	UE_LOG(LogTemp, Warning, TEXT("The new leader added itself to it's followers as well as added the followers"));
+	
+	//Here set the newLeader's leader variable to whatever the old leader's leader was, and change the isLeader boolean to true, as well as type to Champion
+
+	//TODO Base on whether a champion goes to a follow state on whether their leader variable is empty? Change in the StateMove function
+
+	newLeader->isLeader = true;
+	newLeader->npcType = newLeader->GetChampionType();
+
+	
+	UE_LOG(LogTemp, Warning, TEXT("Calling the replace leader function"));
+	AWarhammerGameModeBase::ReplaceLeader(AWarhammerGameModeBase::LeaderList.Find(leader), newLeader);
+	
+}
+
 void ANPC_Controller::StateIdle()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AI is idling"));
+	///UE_LOG(LogTemp, Warning, TEXT("%s is idling, Is leader true?: %s"), *npc->GetName(), (npc->isLeader ? TEXT("True") : TEXT("False")));
+
+	npc->movementComponent->enemiesAreDead = false;
+
+	//TODO Leader AI not moving after enemies are all gone
+	if (npc == npc->replacementLeader)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s is the replacement leader, calling the new leaders function"), *npc->GetName());
+		NewLeadersAndFollowers(npc->leader, npc);
+	}
+
 	if (ensure(npc->movementComponent))
 	{
-		///UE_LOG(LogTemp, Warning, TEXT("Movement Component is set, setting state to move"));
+		UE_LOG(LogTemp, Warning, TEXT("Movement Component is set, setting state to move"));
+
+		if (npc->isLeader)
+		{
+			for (auto* follower : npc->followers)
+			{
+				
+				follower->npcController->SetState(follower->npcController->GetIdleState());
+				follower->movementComponent->curMoveState = follower->movementComponent->GetFollowState();
+			}
+		}
+		
 		SetState(ENPCStates::MOVE);
+
 	} else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Movement Component is not set (check this classes BP)"));
@@ -78,35 +169,41 @@ void ANPC_Controller::StateIdle()
 
 void ANPC_Controller::StateMove()
 {
+	//TODO Make movement state have nothing to do with the leader, so leaders and followers can be set quicker
 	if (npc->npcType == npc->GetCommonType())
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Common Type called"))
+		///UE_LOG(LogTemp, Warning, TEXT("Common Type called"));
 		npc->movementComponent->SetDefaultState(npc->movementComponent->GetFollowState());
-		npc->movementComponent->MoveAI(npc->npc, npc->OverlappingActors);
 	}
 
-	if (npc->npcType == npc->GetChampionType())
+	if (npc->npcType == npc->GetChampionType() && npc->isLeader && !npc->leader)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Champion Type called"))
+		///UE_LOG(LogTemp, Warning, TEXT("Champion Type called"));
+
 		npc->movementComponent->SetDefaultState(npc->movementComponent->GetMoveToLocationState());
-		npc->movementComponent->MoveAI(npc->npc, npc->OverlappingActors);
-	}
 	
-	if (npc->movementComponent->confrontation)
+	} else if(npc->npcType == npc->GetChampionType() && npc->isLeader && npc->leader)
 	{
-		///UE_LOG(LogTemp, Warning, TEXT("Set State to attack"));
-		SetState(ENPCStates::ATTACK);
+		UE_LOG(LogTemp, Warning, TEXT("Champion/Leader %s has a leader"), *npc->GetName());
+		npc->movementComponent->SetDefaultState(npc->movementComponent->GetFollowState());
 	}
+
+	npc->movementComponent->MoveAI(npc);
 }
 
 void ANPC_Controller::StateAttack()
 {
+	//Here the npc should be moving to enemy until they can attack. Right now this is only called when the npc actually attacks
+
+	//Here we run through the combat function until either this npc dies, or their opponent dies. If their opponent dies, then they set this npc's enemyTarget to null, so that this npc can resume
 	if (!npc->movementComponent->enemyTarget)
 	{
+		///UE_LOG(LogTemp, Warning, TEXT("Enemy target null of %s, going to state IDLE."), *npc->GetName());
+		npc->killCount++;
 		npc->movementComponent->canMove = true;
 		npc->movementComponent->confrontation = false;
 		npc->movementComponent->targeted = false;
-		SetState(ENPCStates::IDLE);
+		SetState(ENPCStates::MOVE);
 	}
 
 	if (npc->npcHealth <= 0)
@@ -115,6 +212,8 @@ void ANPC_Controller::StateAttack()
 
 	}else if (npc->movementComponent->confrontation && npc->npcHealth > 0 && ensure(npc->movementComponent->enemyTarget) && npc->movementComponent->enemyTarget->npcHealth > 0)
 	{
+		///UE_LOG(LogTemp, Warning, TEXT("%s is attacking %s"), *npc->GetName(), *npc->movementComponent->enemyTarget->GetName());
+		//TODO change this so that the attack only runs through once per
 		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
 	}
 }
@@ -122,31 +221,33 @@ void ANPC_Controller::StateAttack()
 void ANPC_Controller::StateDie()
 {
 	//Changes this npc's death bool to true so that anyone colliding with/any arrays it's in will read it's dead, then ignore or remove it.
+	//TODO change this procedure into an actual method callable from any script with an array, where it asks for an item to remove as a parameter, then removes it, that way it is only called once from any npc that dies.
 	//Also sets the enemyTarget of the npc that targeted this one to null, so that npc will reset to Idle.
 
+	///UE_LOG(LogTemp, Warning, TEXT("%s has died"), *npc->GetName());
 	if (npc->dwarf)
 	{
 		GameMode->deadDwarfs += 1;
-		AWarhammerGameModeBase::PrintKills(GameMode->deadDwarfs, GameMode->deadGreenskins);
+		UE_LOG(LogTemp, Warning, TEXT("The number of dead dwarfs is: %d, and the number of dead greenskins is: %d."), GameMode->deadDwarfs, GameMode->deadGreenskins);
 	}
 	if (npc->greenskin)
 	{
 		GameMode->deadGreenskins += 1;
-		AWarhammerGameModeBase::PrintKills(GameMode->deadDwarfs, GameMode->deadGreenskins);
+		UE_LOG(LogTemp, Warning, TEXT("The number of dead dwarfs is: %d, and the number of dead greenskins is: %d."), GameMode->deadDwarfs, GameMode->deadGreenskins);
 	}
-
-	npc->isDead = true;
-	npc->movementComponent->enemyTarget->movementComponent->enemyTarget = nullptr;
-	SetActorEnableCollision(false);
-	SetActorTickEnabled(false);
-	/*
-	if (npc->movementComponent->otherChars.Contains(npc))
-	{
-		npc->movementComponent->otherChars.Remove(npc);
-	}*/
 	
+	npc->isDead = true;
+	npc->isLeader = false;
+	npc->movementComponent->enemyTarget->movementComponent->enemyTarget = nullptr;
+	npc->SetActorEnableCollision(false);
+	//npc->GetRootComponent()->SetWorldRotation(FRotator(0, 90, 0));
+	//FVector newLocation = (npc->GetActorLocation(), npc->GetActorLocation(), npc->GetActorLocation() - 80);
+
+	//npc->SetActorLocation(newLocation);
+
+	SetActorTickEnabled(false);
 }
 
-//TODO test combat with multiple npcs to fine tune stats, get static ints working
+//TODO test combat with multiple npcs to fine tune stats
 //TODO get npc to continue after killing a target
 

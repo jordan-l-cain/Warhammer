@@ -8,6 +8,7 @@
 
 class UNPCMovementComponent;
 class ANPC_Controller;
+class AWarhammerGameModeBase;
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class ENPCRace : uint8
@@ -37,13 +38,13 @@ public:
 	// Sets default values for this character's properties
 	ANPC(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+
+	bool dwarf = false;
+	bool greenskin = false;
+
 	//NPC Health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	float npcHealth;
-
-	//Boolean that determines who can attack, read/set by combat class 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC Settings")
-	bool canAttack = false;
 
 	//Strength Stat, which determines amount of damage done to enemy
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
@@ -57,11 +58,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	float defense;
 
+	//Number of kills this npc has
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	float killCount;
+
+	//Boolean that determines who can attack, read/set by combat class 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC Settings")
+	bool canAttack = false;
+
 	//Read function for canAttack boolean
 	bool GetCanAttack();
-
-	bool dwarf = false;
-	bool greenskin = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Boolean used to check if NPC is considered a leader
@@ -75,10 +81,6 @@ public:
 
 	//Set function for canAttack boolean
 	void ModCanAttack(bool boolean);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
-	//Array used to store all nearby actors
-	TArray<AActor*> OverlappingActors;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Movement Component
@@ -125,11 +127,19 @@ public:
 	//ANPC variable used to store this npc's leader, if it has one
 	ANPC* leader;
 
+	//ANPC variable used to store the replacement leader.
+	ANPC* replacementLeader = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//This array is used only by a leader to find and set followers
 	TArray<ANPC*> followers;
 
 	//Location used to set the center of a battle between two goups
 	FVector battleLocation;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	AActor* waypoint;
 
 protected:
 	// Called when the game starts or when spawned

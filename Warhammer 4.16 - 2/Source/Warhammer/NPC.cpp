@@ -35,7 +35,7 @@ void ANPC::BeginPlay()
 						UE_LOG(LogTemp, Warning, TEXT("%s: Adding %s to my array."), *npc->GetName(), *actor->GetName());
 						actor->leader = npc;
 						followers.Add(actor);
-						actor->movementComponent->followerIndex = followers.IndexOfByKey(actor);
+						actor->movementComponent->followerIndex = followers.Find(actor);
 					}
 				}
 			}

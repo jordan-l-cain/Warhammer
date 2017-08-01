@@ -40,6 +40,27 @@ public:
 	//GameMode instance used to access global variables such as dead dwarf and greenskin count
 	AWarhammerGameModeBase* GameMode;
 
+	//Function that sets the AI's state
+	void SetState(ENPCStates state);
+
+	//Function that returns the current state
+	ENPCStates GetCurState();
+
+	//Function that returns the idle state
+	ENPCStates GetIdleState();
+
+	//Function that returns the Move state
+	ENPCStates GetMoveState();
+
+	//Function that returns the Attack state
+	ENPCStates GetAttackState();
+
+	//Function that returns the Die state
+	ENPCStates GetDieState();
+
+	//Function that sets a new leader and their followers after combat. Called from NPCMovement when all enemies are dead in otherChars.
+	void NewLeadersAndFollowers(ANPC* leader, ANPC* newLeader);
+
 protected:
 	
 	UFUNCTION(BlueprintCallable, Category= "Functions")
@@ -53,9 +74,6 @@ protected:
 	ENPCStates curState;
 
 private:
-
-	//Function that sets the AI's state
-	void SetState(ENPCStates state);
 
 	void StateIdle();
 

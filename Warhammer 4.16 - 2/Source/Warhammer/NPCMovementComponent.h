@@ -11,9 +11,10 @@ class ANPC;
 enum class EMoveStates : uint8
 {
 	NULLMOVE UMETA(DisplayName = "Null"),
+	MOVETOLOCATION UMETA(DisplayName = "MoveToLocation"),
 	FOLLOW UMETA(DisplayName = "Follow"),
-	MOVETOENEMY UMETA(DisplayName = "MoveToEnemy"),
-	MOVETOLOCATION UMETA(DisplayName = "MoveToLocation")
+	MOVETOBATTLE UMETA(DisplayName = "MoveToBattle"),
+	MOVETOENEMY UMETA(DisplayName = "MoveToEnemy")
 };
 
 /**
@@ -34,17 +35,20 @@ protected:
 public:
 
 	// Function that handles movement of AI
-	void MoveAI(ANPC* npc, TArray<AActor*> OverlappingActors);
+	void MoveAI(ANPC* npc);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Boolean that's used to determine when two npcs have targeted eachother for attack
 	bool targeted = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Reference pointer to the enemy that is within the minimum distance
 	ANPC* enemyTarget = nullptr;
 
 	//Enemy Leader target variable. Set when an enemy leader is within distance, which will create a middle point between leaders and they will move to the mutual location.
 	ANPC* enemyLeader = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Value for movement speed
 	bool canMove = true;
 
@@ -59,10 +63,29 @@ public:
 	//Location between two enemy leaders, set when they are within distance.
 	FVector middlePoint;
 
-	bool oneTime;
+	//Bool used in the move to location function so that leaders only call the moveto(middlepoint) once.
+	bool moveToLeader;
+
+	//timer used in the MoveToLocation function
+	int locationTimer = 0;
+
+	//timer used in MoveToEnemy function to regulate amount of moveTo calls
+	int moveToEnemyTimer = 120;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
-	//Array used to store individual overlapping actors so they may be cast
+	//This bool will be checked at beginning of movetoEnemy to prevent early termination of combat.
+	bool hasSeenEnemy = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//This bool will prevent running any commands out of the moveToEnemy state.
+	bool enemiesAreDead = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//Used so that the leaders will set their followers state to move to enemy only once per combat.
+	bool setFollowersMoveToEnemy = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//Array of casted overlapping actors, filtered by the FlterEnemies function so it only contains enemies.
 	TArray<ANPC*> otherChars;
 
 	//Bool used to determine when two npc's can fight
@@ -75,6 +98,9 @@ public:
 	EMoveStates GetFollowState();
 
 	//Return function that will return the Move To Enemy state
+	EMoveStates GetMoveToBattleState();
+
+	//Return function that will return the Move To Enemy state
 	EMoveStates GetMoveToEnemyState();
 
 	//Return function that will return the Move To Location state
@@ -82,6 +108,10 @@ public:
 
 	//Function that sets the default state of the switch for the movement states
 	void SetDefaultState(EMoveStates defaultState);
+
+	//Function used to find all designated leaders at the start of the game.
+	UFUNCTION(BlueprintCallable, Category = "Functions")
+	void FilterEnemies (const TArray<AActor*> enemies, ANPC* npc);
 
 private:
 
@@ -105,8 +135,11 @@ private:
 	//Follow function, which will make AI follow a target
 	void Follow(ANPC* npc);
 
-	//Move To Enemy function
-	void MoveToEnemy(ANPC* npc, TArray<AActor*> OverlappingActors);
+	//Move To Battle Function, is used to bring npcs within distance of each other and select a target
+	void MoveToBattle(ANPC* npc);
+
+	//Move To Enemy function, once two npcs target each other, this state is called move them to each other and attack
+	void MoveToEnemy(ANPC* npc);
 
 	//Move To Location function, which is where leaders will decide where to move to, be it a location or towards an enemy
 	void MoveToLocation(ANPC* npc);

@@ -5,18 +5,10 @@
 #include "WarhammerGameModeBase.h"
 
 TArray<ANPC*> AWarhammerGameModeBase::LeaderList;
-///int AWarhammerGameModeBase::deadDwarfs;
-///int AWarhammerGameModeBase::deadGreenskins;
-
-void AWarhammerGameModeBase::PrintKills(int a, int b)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Number of dead dwarfs: %f."), a);
-	UE_LOG(LogTemp, Warning, TEXT("Number of dead greenskins: %f."), b)
-}
 
 void AWarhammerGameModeBase::PopulateLeaderList()
 {
-
+	LeaderList.Empty();
 	for (TActorIterator<ANPC> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		ANPC *actor = *ActorItr;
@@ -34,5 +26,23 @@ void AWarhammerGameModeBase::PopulateLeaderList()
 	for (auto* actor : LeaderList)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is a leader in the array."), *actor->GetName());
+	}*/
+}
+
+void AWarhammerGameModeBase::ReplaceLeader(int32 indexOf, ANPC* replacement)
+{
+	/*for (auto* actor : LeaderList)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s is a leader in the OLD array at index %f."), *actor->GetName(), LeaderList.Find(actor));
+	}*/
+	if (LeaderList.Contains(LeaderList[indexOf]) && LeaderList[indexOf] != replacement)
+	{
+		LeaderList.RemoveAt(indexOf, 1, false);
+		LeaderList.Insert(replacement, indexOf);
+	}
+
+	/*for (auto* actor : LeaderList)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s is a leader in the NEW array at index %f."), *actor->GetName(), LeaderList.Find(actor));
 	}*/
 }
