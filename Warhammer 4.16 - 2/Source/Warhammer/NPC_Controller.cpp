@@ -91,7 +91,8 @@ ENPCStates ANPC_Controller::GetDieState()
 void ANPC_Controller::NewLeadersAndFollowers(ANPC* leader, ANPC* newLeader)
 {
 	
-	///UE_LOG(LogTemp, Warning, TEXT("%s is a leader"), *npc->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("%s is the new leader"), *npc->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("%s is the old leader"), *leader->GetName());
 
 	
 	//Here we iterate through the old leader's followers. If the follower is not the new leader npc, then we set the leader of the follwer to the new leader
@@ -127,9 +128,10 @@ void ANPC_Controller::NewLeadersAndFollowers(ANPC* leader, ANPC* newLeader)
 
 	
 	UE_LOG(LogTemp, Warning, TEXT("Calling the replace leader function"));
-	AWarhammerGameModeBase::ReplaceLeader(AWarhammerGameModeBase::LeaderList.Find(leader), newLeader);
+	AWarhammerGameModeBase::ReplaceLeader(AWarhammerGameModeBase::LeaderList.Find(leader), newLeader, leader);
 	
 }
+
 
 void ANPC_Controller::StateIdle()
 {
@@ -142,6 +144,7 @@ void ANPC_Controller::StateIdle()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is the replacement leader, calling the new leaders function"), *npc->GetName());
 		NewLeadersAndFollowers(npc->leader, npc);
+		npc->replacementLeader = nullptr;
 	}
 
 	if (ensure(npc->movementComponent))
@@ -169,6 +172,7 @@ void ANPC_Controller::StateIdle()
 
 void ANPC_Controller::StateMove()
 {
+	npc->CallMoveStateEvent();
 	//TODO Make movement state have nothing to do with the leader, so leaders and followers can be set quicker
 	if (npc->npcType == npc->GetCommonType())
 	{
@@ -212,7 +216,7 @@ void ANPC_Controller::StateAttack()
 
 	}else if (npc->movementComponent->confrontation && npc->npcHealth > 0 && ensure(npc->movementComponent->enemyTarget) && npc->movementComponent->enemyTarget->npcHealth > 0)
 	{
-		///UE_LOG(LogTemp, Warning, TEXT("%s is attacking %s"), *npc->GetName(), *npc->movementComponent->enemyTarget->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s is attacking %s"), *npc->GetName(), *npc->movementComponent->enemyTarget->GetName());
 		//TODO change this so that the attack only runs through once per
 		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
 	}

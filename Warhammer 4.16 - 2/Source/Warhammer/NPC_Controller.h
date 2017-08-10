@@ -10,6 +10,7 @@ class ANPC;
 class UNPCMovementComponent;
 class AWarhammerGameModeBase;
 
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class ENPCStates : uint8
 {
 	IDLE UMETA(DisplayName = "Idle"),
@@ -61,6 +62,11 @@ public:
 	//Function that sets a new leader and their followers after combat. Called from NPCMovement when all enemies are dead in otherChars.
 	void NewLeadersAndFollowers(ANPC* leader, ANPC* newLeader);
 
+	UPROPERTY(VisibleAnywhere, Category = "NPC Settings")
+	//Current state the AI is in
+	ENPCStates curState;
+
+
 protected:
 	
 	UFUNCTION(BlueprintCallable, Category= "Functions")
@@ -70,8 +76,7 @@ protected:
 	// Called every frame
 	void Tick(float DeltaTime);
 
-	//Current state the AI is in
-	ENPCStates curState;
+
 
 private:
 

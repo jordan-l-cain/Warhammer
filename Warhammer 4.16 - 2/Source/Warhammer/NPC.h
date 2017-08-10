@@ -63,11 +63,15 @@ public:
 	float killCount;
 
 	//Boolean that determines who can attack, read/set by combat class 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	bool canAttack = false;
 
 	//Read function for canAttack boolean
 	bool GetCanAttack();
+
+	//Boolean that determines who can attack, read/set by combat class 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	bool attacking = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Boolean used to check if NPC is considered a leader
@@ -137,9 +141,36 @@ public:
 	//Location used to set the center of a battle between two goups
 	FVector battleLocation;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	AActor* waypoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Settings")
+	//This array is used to store and access all attack animations
+	TArray<UAnimMontage*> attackAnims;
+
+	//This function is used to call the Attack Animation event since it can only be called from this class.
+	void CallMoveStateEvent();
+
+	UFUNCTION(Category = "States", BlueprintImplementableEvent)
+	//Determines when the Anim blueprint can play the movement animations. Called in NPC_Controller_BP
+	void inMoveState();
+
+	UFUNCTION(Category = "States", BlueprintImplementableEvent)
+	void inAttackState();
+
+	//This function is used to call the Attack Animation event since it can only be called from this class.
+	void CallAttackAnimationEvent(int i);
+
+	//This function is used to call the Attack Animation event since it can only be called from this class.
+	void CallDefenseAnimationEvent(int i);
+
+	UFUNCTION(Category = "Functions", BlueprintImplementableEvent)
+	//This function sends which animation index to play as a parameter
+	void PlayAttackAnimation(int i);
+
+	UFUNCTION(Category = "Functions", BlueprintImplementableEvent)
+	//This function sends which animation index to play as a parameter
+	void PlayDefenseAnimation(int i);
 
 protected:
 	// Called when the game starts or when spawned

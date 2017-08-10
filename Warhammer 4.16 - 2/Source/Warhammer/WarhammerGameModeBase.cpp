@@ -29,16 +29,31 @@ void AWarhammerGameModeBase::PopulateLeaderList()
 	}*/
 }
 
-void AWarhammerGameModeBase::ReplaceLeader(int32 indexOf, ANPC* replacement)
+void AWarhammerGameModeBase::ReplaceLeader(int32 indexOf, ANPC* replacement, ANPC* oldLeader)
 {
 	/*for (auto* actor : LeaderList)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is a leader in the OLD array at index %f."), *actor->GetName(), LeaderList.Find(actor));
 	}*/
-	if (LeaderList.Contains(LeaderList[indexOf]) && LeaderList[indexOf] != replacement)
+	if (LeaderList.Num() > 0 && LeaderList.IsValidIndex(indexOf))
 	{
-		LeaderList.RemoveAt(indexOf, 1, false);
-		LeaderList.Insert(replacement, indexOf);
+		if (LeaderList.Contains(LeaderList[indexOf]) && LeaderList[indexOf] != replacement  && LeaderList[indexOf] == oldLeader)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Removing the leader at the index."));
+			LeaderList.RemoveAt(indexOf, 1, false);
+			UE_LOG(LogTemp, Warning, TEXT("Inserting the new leader at the index."));
+			LeaderList.Insert(replacement, indexOf);
+			UE_LOG(LogTemp, Warning, TEXT("Leader was replaced."));
+
+		} else if (LeaderList[indexOf] != oldLeader)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Finding new index of the leader."));
+			indexOf = LeaderList.Find(oldLeader);
+			UE_LOG(LogTemp, Warning, TEXT("Removing the old leader at the new index."));
+			LeaderList.RemoveAt(indexOf, 1, false);
+			UE_LOG(LogTemp, Warning, TEXT("Inserting the new leader at the index."));
+			LeaderList.Insert(replacement, indexOf);
+		}
 	}
 
 	/*for (auto* actor : LeaderList)

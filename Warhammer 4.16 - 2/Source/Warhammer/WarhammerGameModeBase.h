@@ -34,5 +34,5 @@ public:
 	void PopulateLeaderList();
 
 	//Function that replaces a leader with a new leader, called from current leader in death state
-	static void ReplaceLeader(int indexOf, ANPC* replacement);
+	static void ReplaceLeader(int indexOf, ANPC* replacement, ANPC* oldLeader);
 };

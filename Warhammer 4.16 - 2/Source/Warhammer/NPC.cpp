@@ -139,6 +139,20 @@ bool ANPC::GetCanAttack()
 	return canAttack;
 }
 
+void ANPC::CallMoveStateEvent()
+{
+	inMoveState();
+}
+
+void ANPC::CallAttackAnimationEvent(int i)
+{
+	PlayAttackAnimation(i);
+}
+
+void ANPC::CallDefenseAnimationEvent(int i)
+{
+	PlayDefenseAnimation(i);
+}
 
 
 /*

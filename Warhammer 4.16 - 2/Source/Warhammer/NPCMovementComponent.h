@@ -8,6 +8,7 @@
 
 class ANPC;
 
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class EMoveStates : uint8
 {
 	NULLMOVE UMETA(DisplayName = "Null"),
@@ -91,6 +92,7 @@ public:
 	//Bool used to determine when two npc's can fight
 	bool confrontation;
 
+	UPROPERTY(VisibleAnywhere, Category = "NPC Settings")
 	//Enum variable defining the current movement state
 	EMoveStates curMoveState = EMoveStates::NULLMOVE;
 

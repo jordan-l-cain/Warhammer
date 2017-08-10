@@ -62,7 +62,7 @@ void UNPCMovementComponent::MoveToLocation(ANPC* npc)
 		if (locationTimer >= 20)
 		{
 			npc->npcController->MoveToActor(npc->waypoint);
-			UE_LOG(LogTemp, Warning, TEXT("This npc is %s, about to search for enemy leaders."), *npc->GetName());
+			///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, about to search for enemy leaders."), *npc->GetName());
 			for (auto* actor : AWarhammerGameModeBase::LeaderList)
 			{
 				///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, has found at least one enemy leader"), *npc->GetName());
@@ -171,7 +171,7 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 				for (auto* follower : npc->followers)
 				{
 					///Need to be made to call only once per combat
-					UE_LOG(LogTemp, Warning, TEXT("Setting %s to move to battle state"), *follower->GetName());
+					///UE_LOG(LogTemp, Warning, TEXT("Setting %s to move to battle state"), *follower->GetName());
 					if (follower->movementComponent->curMoveState != follower->movementComponent->GetMoveToBattleState())
 					{
 						follower->movementComponent->curMoveState = follower->movementComponent->GetMoveToBattleState();
@@ -190,7 +190,7 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 		//If the npc has not yet seen an enemy, continue moving towards middle of battle.
 		//This is here to prevent followers in the back of a formation from calling a new leader.
 		//Once they have a target, the npc will switch to the MoveToEnemy state.
-		if (hasSeenEnemy && !enemyTarget)
+		if (hasSeenEnemy && !enemyTarget && !targeted)
 		{
 
 			if (otherChars.Num() > 0)
@@ -210,11 +210,11 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 						///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, checking distance to enemy."), *npc->GetName());
 						///UE_LOG(LogTemp, Warning, TEXT("The distance is %f"), distanceLength);
 
-						if (distanceLength < 2500.0 && !otherChar->movementComponent->targeted && otherChar->movementComponent->GetMoveToBattleState() == otherChar->movementComponent->GetMoveToBattleState())
+						if (distanceLength < 2500.0 && !otherChar->movementComponent->targeted && otherChar->movementComponent->curMoveState == otherChar->movementComponent->GetMoveToBattleState() && (!otherChar->movementComponent->enemyTarget || otherChar->movementComponent->enemyTarget == npc))
 						{
 							enemyTarget = otherChar;
-							enemyTarget->movementComponent->targeted = true;
 							enemyTarget->movementComponent->enemyTarget = npc;
+							enemyTarget->movementComponent->targeted = true;
 							targeted = true;
 
 							///UE_LOG(LogTemp, Warning, TEXT("The enemy: %s, is within distance of me %s"), *enemyTarget->GetName(), *npc->GetName());
@@ -232,7 +232,7 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 				{
 					for (auto* deadChar : deadChars)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("%s is the dead npc to be removed, being removed by %s."), *deadChar->GetName(), *npc->GetName());
+						///UE_LOG(LogTemp, Warning, TEXT("%s is the dead npc to be removed, being removed by %s."), *deadChar->GetName(), *npc->GetName());
 						otherChars.Remove(deadChar);
 					}
 
@@ -288,7 +288,7 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 					{
 						for (auto* deadFollower : deadFollowers)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("Removing follower %s."), *deadFollower->GetName());
+							///UE_LOG(LogTemp, Warning, TEXT("Removing follower %s."), *deadFollower->GetName());
 							npc->followers.Remove(deadFollower);
 						}
 						deadFollowers.Empty();
@@ -305,13 +305,34 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 
 		} else if (enemyTarget)
 		{
+			///UE_LOG(LogTemp, Warning, TEXT("%s is stuck with an enemy target"), *npc->GetName());
+			
+			if (!enemyTarget->movementComponent->enemyTarget)
+			{
+				enemyTarget->movementComponent->enemyTarget = npc;
+				enemyTarget->movementComponent->targeted = true;
+				targeted = true;
+			}
+			
 			if (enemyTarget->movementComponent->enemyTarget == npc)
 			{
 				curMoveState = EMoveStates::MOVETOENEMY;
+			} else
+			{
+				enemyTarget = nullptr;
 			}
+
+			if (enemyTarget->isDead)
+			{
+				enemyTarget = nullptr;
+			}
+
+		} else if (targeted)
+		{
+			targeted = false;
 		}
-	}
-	
+
+	} 
 
 }
 
