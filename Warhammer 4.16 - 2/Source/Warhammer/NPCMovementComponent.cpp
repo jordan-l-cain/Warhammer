@@ -300,29 +300,27 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 		
 				hasSeenEnemy = false;
 				enemiesAreDead = true;
-				///UE_LOG(LogTemp, Warning, TEXT("Setting seenEnemy to false and enemies are all dead true, should also be going to idle state."));
 			}
 
 		} else if (enemyTarget)
 		{
 			///UE_LOG(LogTemp, Warning, TEXT("%s is stuck with an enemy target"), *npc->GetName());
 			
-			if (!enemyTarget->movementComponent->enemyTarget)
-			{
-				enemyTarget->movementComponent->enemyTarget = npc;
-				enemyTarget->movementComponent->targeted = true;
-				targeted = true;
-			}
-			
-			if (enemyTarget->movementComponent->enemyTarget == npc)
-			{
-				curMoveState = EMoveStates::MOVETOENEMY;
-			} else
+			if (enemyTarget->isDead)
 			{
 				enemyTarget = nullptr;
-			}
 
-			if (enemyTarget->isDead)
+			}else if (!enemyTarget->movementComponent->enemyTarget)
+			{
+				enemyTarget->movementComponent->targeted = true;
+				enemyTarget->movementComponent->enemyTarget = npc;
+				targeted = true;
+
+			}else if (enemyTarget->movementComponent->enemyTarget == npc)
+			{
+				curMoveState = EMoveStates::MOVETOENEMY;
+
+			} else
 			{
 				enemyTarget = nullptr;
 			}
@@ -407,7 +405,7 @@ void UNPCMovementComponent::FilterEnemies(const TArray<AActor*> enemies, ANPC* n
 		{
 			ANPC* actor = Cast<ANPC>(enemy);
 
-			if (actor->GetNPCRace() != npc->GetNPCRace() && !actor->isDead)
+			if (ensure(actor) && actor->GetNPCRace() != npc->GetNPCRace() && !actor->isDead)
 			{
 				if (!otherChars.Contains(actor))
 				{
