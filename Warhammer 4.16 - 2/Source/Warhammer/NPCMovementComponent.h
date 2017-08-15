@@ -15,7 +15,8 @@ enum class EMoveStates : uint8
 	MOVETOLOCATION UMETA(DisplayName = "MoveToLocation"),
 	FOLLOW UMETA(DisplayName = "Follow"),
 	MOVETOBATTLE UMETA(DisplayName = "MoveToBattle"),
-	MOVETOENEMY UMETA(DisplayName = "MoveToEnemy")
+	MOVETOENEMY UMETA(DisplayName = "MoveToEnemy"),
+	MOVETOPLAYER UMETA(DisplayName = "MoveToPlayer")
 };
 
 /**
@@ -43,8 +44,11 @@ public:
 	bool targeted = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
-	//Reference pointer to the enemy that is within the minimum distance
+	//Pointer to the enemy that is within the minimum distance
 	ANPC* enemyTarget = nullptr;
+
+	//Pointer to the player. Set by player, who calls event when player checks minimum distance to npcs
+	AActor* playerTarget = nullptr;
 
 	//Enemy Leader target variable. Set when an enemy leader is within distance, which will create a middle point between leaders and they will move to the mutual location.
 	ANPC* enemyLeader = nullptr;
@@ -115,6 +119,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Functions")
 	void FilterEnemies (const TArray<AActor*> enemies, ANPC* npc);
 
+	//Function that will set the player as the npc's target
+	void PlayerAttack(AActor* player);
+
 private:
 
 	FVector newLocation;
@@ -142,6 +149,9 @@ private:
 
 	//Move To Enemy function, once two npcs target each other, this state is called move them to each other and attack
 	void MoveToEnemy(ANPC* npc);
+
+	//Move To Player function, which is a clone of MoveToEnemy
+	void MoveToPlayer(ANPC* npc);
 
 	//Move To Location function, which is where leaders will decide where to move to, be it a location or towards an enemy
 	void MoveToLocation(ANPC* npc);

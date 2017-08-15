@@ -34,6 +34,10 @@ void UNPCMovementComponent::MoveAI(ANPC* npc)
 			MoveToBattle(npc);
 			break;
 
+		case EMoveStates::MOVETOPLAYER:
+			MoveToPlayer(npc);
+			break;
+
 		case EMoveStates::NULLMOVE:
 			curMoveState = defaultState;
 	}
@@ -336,11 +340,11 @@ void UNPCMovementComponent::MoveToBattle(ANPC* npc)
 
 void UNPCMovementComponent::MoveToEnemy(ANPC* npc)
 {
-	
+
 	if (enemyTarget)
 	{
 		///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, and is moving to attack %s."), *npc->GetName(), *enemyTarget->GetName());
-		
+
 		//Here this npc will check the distance between themselves and their target until a minimum of 4 meters,
 		//at which point the canMove bool stops movement and Confrontation causes a transition to attack.
 
@@ -366,6 +370,48 @@ void UNPCMovementComponent::MoveToEnemy(ANPC* npc)
 			//TODO change moveto to call once
 			npc->npcController->MoveToActor(enemyTarget, 150.0);
 		}
+	} else
+	{
+		curMoveState = EMoveStates::MOVETOBATTLE;
+	}
+}
+
+void UNPCMovementComponent::MoveToPlayer(ANPC* npc)
+{
+
+	if (playerTarget)
+	{
+		///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, and is moving to attack %s."), *npc->GetName(), *enemyTarget->GetName());
+
+		//Here this npc will check the distance between themselves and their target until a minimum of 4 meters,
+		//at which point the canMove bool stops movement and Confrontation causes a transition to attack.
+
+		FVector distance;
+		distance = npc->GetActorLocation() - playerTarget->GetActorLocation();
+		targetDistanceLength = distance.Size();
+
+
+			if (targetDistanceLength < 400.0)
+			{
+				///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, attacking enemy target."), *npc->GetName());
+				moveToEnemyTimer = 120;
+				canMove = false;
+				confrontation = true;
+
+				//npc->npcController->SetState(npc->npcController->GetAttackState());
+			} else
+			{
+				moveToEnemyTimer = 120;
+				canMove = true;
+				confrontation = false;
+			}
+
+	
+		///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, moving to enemy target %s and they ."), *npc->GetName(), *enemyTarget->GetName(), (enemyTarget->isLeader ? TEXT("are a leader") : TEXT("are not a leader")));
+		MaxWalkSpeed = targetDistanceLength * .35;
+		//TODO change moveto to call once
+		npc->npcController->MoveToActor(playerTarget, 150.0);
+
 	} else
 	{
 		curMoveState = EMoveStates::MOVETOBATTLE;
@@ -419,4 +465,8 @@ void UNPCMovementComponent::FilterEnemies(const TArray<AActor*> enemies, ANPC* n
 	}
 }
 
-
+void UNPCMovementComponent::PlayerAttack(AActor* player)
+{
+	playerTarget = player;
+	curMoveState = EMoveStates::MOVETOPLAYER;
+}

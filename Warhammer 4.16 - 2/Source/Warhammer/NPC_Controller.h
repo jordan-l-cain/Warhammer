@@ -16,6 +16,7 @@ enum class ENPCStates : uint8
 	IDLE UMETA(DisplayName = "Idle"),
 	MOVE UMETA(DisplayName = "Move"),
 	ATTACK UMETA(DisplayName = "Attack"),
+	ATTACKPLAYER UMETA(DisplayName = "AttackPlayer"),
 	DIE UMETA(DisplayName = "Die")
 };
 
@@ -56,6 +57,9 @@ public:
 	//Function that returns the Attack state
 	ENPCStates GetAttackState();
 
+	//Function that returns the Attack state
+	ENPCStates GetAttackPlayerState();
+
 	//Function that returns the Die state
 	ENPCStates GetDieState();
 
@@ -85,6 +89,8 @@ private:
 	void StateMove();
 
 	void StateAttack();
+
+	void StateAttackPlayer();
 
 	void StateDie();
 

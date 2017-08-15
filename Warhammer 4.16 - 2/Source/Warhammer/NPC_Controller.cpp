@@ -36,24 +36,28 @@ void ANPC_Controller::Tick(float DeltaTime)
 {
 	switch (curState)
 	{
-	case ENPCStates::IDLE:
-		StateIdle();
-		break;
+		case ENPCStates::IDLE:
+			StateIdle();
+			break;
 
-	case ENPCStates::MOVE:
-		StateMove();
-		break;
+		case ENPCStates::MOVE:
+			StateMove();
+			break;
 
-	case ENPCStates::ATTACK:
-		StateAttack();
-		break;
+		case ENPCStates::ATTACK:
+			StateAttack();
+			break;
 
-	case ENPCStates::DIE:
-		StateDie();
-		break;
+		case ENPCStates::ATTACKPLAYER:
+			StateAttackPlayer();
+			break;
 
-	default:
-		StateIdle();
+		case ENPCStates::DIE:
+			StateDie();
+			break;
+
+		default:
+			StateIdle();
 	}
 }
 
@@ -81,6 +85,11 @@ ENPCStates ANPC_Controller::GetMoveState()
 ENPCStates ANPC_Controller::GetAttackState()
 {
 	return ENPCStates::ATTACK;
+}
+
+ENPCStates ANPC_Controller::GetAttackPlayerState()
+{
+	return ENPCStates::ATTACKPLAYER;
 }
 
 ENPCStates ANPC_Controller::GetDieState()
@@ -209,6 +218,8 @@ void ANPC_Controller::StateAttack()
 		npc->movementComponent->targeted = false;
 		SetState(ENPCStates::MOVE);
 	}
+	
+
 
 	if (npc->npcHealth <= 0)
 	{
@@ -220,6 +231,22 @@ void ANPC_Controller::StateAttack()
 		//TODO change this so that the attack only runs through once per
 		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
 	}
+}
+
+void ANPC_Controller::StateAttackPlayer()
+{
+
+	if (npc->npcHealth <= 0)
+	{
+		SetState(ENPCStates::DIE);
+
+	} else if (npc->movementComponent->confrontation && npc->npcHealth > 0 && ensure(npc->movementComponent->enemyTarget) && npc->movementComponent->enemyTarget->npcHealth > 0)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("%s is attacking %s"), *npc->GetName(), *npc->movementComponent->enemyTarget->GetName());
+		//TODO change this so that the attack only runs through once per
+		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
+	}
+
 }
 
 void ANPC_Controller::StateDie()
@@ -251,6 +278,7 @@ void ANPC_Controller::StateDie()
 
 	SetActorTickEnabled(false);
 }
+
 
 //TODO test combat with multiple npcs to fine tune stats
 //TODO get npc to continue after killing a target

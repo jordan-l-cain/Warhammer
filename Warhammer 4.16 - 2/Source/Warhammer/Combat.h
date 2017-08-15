@@ -25,8 +25,11 @@ public:
 	//Starter Combat Function
 	static void Attack(ANPC* npc, ANPC* enemy);
 
+	//Player Combat Function
+	static void AttackPlayer(ANPC* npc, AActor* player);
+
 	//Array where all NPCs entering combat will be stored and then detracted after death.
-	static TArray<ANPC*> CombatList;
+	static TArray<AActor*> CombatList;
 
 	ANPC* char_combat1 = nullptr;
 	ANPC* char_combat2 = nullptr;

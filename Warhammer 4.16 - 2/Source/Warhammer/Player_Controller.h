@@ -15,6 +15,8 @@ enum class EPlayerStates : uint8
 	DIE UMETA(DisplayName = "Die")
 };
 
+class APlayer_Char;
+
 /**
  * 
  */
@@ -24,6 +26,51 @@ class WARHAMMER_API APlayer_Controller : public APlayerController
 	GENERATED_BODY()
 	
 	
-	
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Functions")
+	void Play();
+
+	UFUNCTION(BlueprintCallable, Category = "Functions")
+	// Called every frame
+	void Tick(float DeltaTime);
+
+public:
+
+	UPROPERTY(BlueprintReadWrite, Category = "Player Settings")
+	//Pointer to the player
+	APlayer_Char* playerChar;
+
+	//Function that sets the AI's state
+	void SetState(EPlayerStates state);
+
+	//Function that returns the current state
+	EPlayerStates GetCurState();
+
+	//Function that returns the idle state
+	EPlayerStates GetIdleState();
+
+	//Function that returns the Move state
+	EPlayerStates GetMoveState();
+
+	//Function that returns the Attack state
+	EPlayerStates GetAttackState();
+
+	//Function that returns the Die state
+	EPlayerStates GetDieState();
+
+
+private:
+
+	//Current state of the player
+	EPlayerStates curState;
+
+	void StateIdle();
+
+	void StateMove();
+
+	void StateAttack();
+
+	void StateDie();
 	
 };
