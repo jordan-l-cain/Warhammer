@@ -2,29 +2,49 @@
 
 #include "Warhammer.h"
 #include "Player_Char.h"
+#include "Player_Controller.h"
 #include "NPC.h"
+#include "NPCMovementComponent.h"
 #include "PlayerMovementComponent.h"
 
 
 void UPlayerMovementComponent::MovementState()
 {
-	if (Enemies.Num() > 0)
+	if (Enemies.Num() > 0 && !enemyTarget)
 	{
 		for (auto* enemy : Enemies)
 		{
-			FVector distance;
-			distance = GetActorLocation() - enemy->GetActorLocation();
-			float targetDistanceLength = distance.Size();
-
-			if (targetDistanceLength < 1000)
+			if (!enemy->movementComponent->playerTarget)
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("%s is within 10 meters."), *enemy->GetName());
+				FVector distance;
+				distance = GetActorLocation() - enemy->GetActorLocation();
+				float targetDistanceLength = distance.Size();
+
+				if (targetDistanceLength < 2500.0 && !enemy->movementComponent->targeted && (enemy->movementComponent->curMoveState == enemy->movementComponent->GetMoveToBattleState() || enemy->movementComponent->curMoveState == enemy->movementComponent->GetMoveToLocationState()) && !enemy->movementComponent->enemyTarget)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("%s is within 25 meters."), *enemy->GetName());
+					enemy->movementComponent->playerTarget = playerChar;
+					enemyTarget = enemy;
+				}
 			}
+		}
+	} else if (enemyTarget)
+	{
+		//Move(enemyTarget->GetActorLocation(), 175);
+
+		FVector distance;
+		distance = GetActorLocation() - enemyTarget->GetActorLocation();
+		float targetDistanceLength = distance.Size();
+
+		if (targetDistanceLength <= 190)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s is about to be attacked."), *enemyTarget->GetName());
+			playerChar->playerController->SetState(playerChar->playerController->GetAttackState());
 		}
 	}
 }
 
-void UPlayerMovementComponent::FilterEnemies(const TArray<AActor*> npcs, APlayer_Char* playerChar)
+void UPlayerMovementComponent::FilterEnemies(const TArray<AActor*> npcs)
 {
 	for (auto* enemy : npcs)
 	{
@@ -40,6 +60,7 @@ void UPlayerMovementComponent::FilterEnemies(const TArray<AActor*> npcs, APlayer
 			}
 		}
 	}
+	
 }
 
 

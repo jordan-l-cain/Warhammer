@@ -7,6 +7,7 @@
 #include "Combat.generated.h"
 
 class ANPC;
+class APlayer_Char;
 
 /**
  * This class will handle the combat systems for all npcs. 
@@ -26,7 +27,7 @@ public:
 	static void Attack(ANPC* npc, ANPC* enemy);
 
 	//Player Combat Function
-	static void AttackPlayer(ANPC* npc, AActor* player);
+	static void AttackPlayer(ANPC* npc, APlayer_Char* player);
 
 	//Array where all NPCs entering combat will be stored and then detracted after death.
 	static TArray<AActor*> CombatList;

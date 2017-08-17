@@ -13,7 +13,7 @@ void AWarhammerGameModeBase::PopulateLeaderList()
 	{
 		ANPC *actor = *ActorItr;
 
-		if (actor->GetNPCType() == actor->GetChampionType())
+		if (actor && actor->GetNPCType() == actor->GetChampionType())
 		{
 			if (!LeaderList.Contains(actor)  && actor->isLeader)
 			{

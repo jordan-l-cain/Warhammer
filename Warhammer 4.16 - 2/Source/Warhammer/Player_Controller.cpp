@@ -3,6 +3,8 @@
 #include "Warhammer.h"
 #include "Player_Char.h"
 #include "PlayerMovementComponent.h"
+#include "Combat.h"
+#include "NPC.h"
 #include "Player_Controller.h"
 
 
@@ -54,12 +56,27 @@ void APlayer_Controller::StateMove()
 
 void APlayer_Controller::StateAttack()
 {
+	if (!playerChar->movementComponent->enemyTarget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player is switching to move state after enemy has died"));
+		SetState(EPlayerStates::MOVE);
+	}
 
+	if (playerChar->playerHealth <= 0)
+	{
+		SetState(EPlayerStates::DIE);
+
+	} else if (playerChar->movementComponent->enemyTarget && playerChar->movementComponent->enemyTarget->npcHealth > 0)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("%s is attacking %s"), *playerChar->GetName(), *playerChar->movementComponent->enemyTarget->GetName());
+		//TODO change this so that the attack only runs through once per so that the player can run away
+		UCombat::AttackPlayer(playerChar->movementComponent->enemyTarget, playerChar);
+	}
 }
 
 void APlayer_Controller::StateDie()
 {
-
+	//Setup so that if an NPC kills the player they reset like any other combat scenario
 }
 
 

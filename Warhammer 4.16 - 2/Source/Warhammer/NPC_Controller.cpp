@@ -5,6 +5,8 @@
 #include "NPCMovementComponent.h"
 #include "Combat.h"
 #include "WarhammerGameModeBase.h"
+#include "Player_Char.h"
+#include "PlayerMovementComponent.h"
 #include "NPC_Controller.h"
 
 // Sets default values
@@ -228,7 +230,7 @@ void ANPC_Controller::StateAttack()
 	}else if (npc->movementComponent->confrontation && npc->npcHealth > 0 && ensure(npc->movementComponent->enemyTarget) && npc->movementComponent->enemyTarget->npcHealth > 0)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("%s is attacking %s"), *npc->GetName(), *npc->movementComponent->enemyTarget->GetName());
-		//TODO change this so that the attack only runs through once per
+		//TODO if combat list removes the two npc's fighting after the function runs through every time, then if the player moves away and doesn't call the attack function, then the npc won't attack
 		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
 	}
 }
@@ -236,17 +238,26 @@ void ANPC_Controller::StateAttack()
 void ANPC_Controller::StateAttackPlayer()
 {
 
+	if (!npc->movementComponent->playerTarget)
+	{
+		///UE_LOG(LogTemp, Warning, TEXT("Enemy target null of %s, going to state IDLE."), *npc->GetName());
+		npc->killCount++;
+		npc->movementComponent->canMove = true;
+		npc->movementComponent->confrontation = false;
+		npc->movementComponent->targeted = false;
+		SetState(ENPCStates::MOVE);
+	}
+
 	if (npc->npcHealth <= 0)
 	{
 		SetState(ENPCStates::DIE);
 
-	} else if (npc->movementComponent->confrontation && npc->npcHealth > 0 && ensure(npc->movementComponent->enemyTarget) && npc->movementComponent->enemyTarget->npcHealth > 0)
+	} else if (npc->npcHealth > 0 && npc->movementComponent->playerTarget && npc->movementComponent->playerTarget->playerHealth > 0)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("%s is attacking %s"), *npc->GetName(), *npc->movementComponent->enemyTarget->GetName());
 		//TODO change this so that the attack only runs through once per
-		UCombat::Attack(npc, npc->movementComponent->enemyTarget);
+		UCombat::AttackPlayer(npc, npc->movementComponent->playerTarget);
 	}
-
 }
 
 void ANPC_Controller::StateDie()
@@ -269,7 +280,16 @@ void ANPC_Controller::StateDie()
 	
 	npc->isDead = true;
 	npc->isLeader = false;
-	npc->movementComponent->enemyTarget->movementComponent->enemyTarget = nullptr;
+
+	if (npc->movementComponent->enemyTarget)
+	{
+		npc->movementComponent->enemyTarget->movementComponent->enemyTarget = nullptr;
+	}
+	if (npc->movementComponent->playerTarget)
+	{
+		npc->movementComponent->playerTarget->movementComponent->enemyTarget = nullptr;
+	}
+
 	npc->SetActorEnableCollision(false);
 	//npc->GetRootComponent()->SetWorldRotation(FRotator(0, 90, 0));
 	//FVector newLocation = (npc->GetActorLocation(), npc->GetActorLocation(), npc->GetActorLocation() - 80);

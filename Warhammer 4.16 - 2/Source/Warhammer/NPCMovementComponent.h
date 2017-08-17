@@ -7,6 +7,7 @@
 #include "NPCMovementComponent.generated.h"
 
 class ANPC;
+class APlayer_Char;
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class EMoveStates : uint8
@@ -47,8 +48,8 @@ public:
 	//Pointer to the enemy that is within the minimum distance
 	ANPC* enemyTarget = nullptr;
 
-	//Pointer to the player. Set by player, who calls event when player checks minimum distance to npcs
-	AActor* playerTarget = nullptr;
+	//Pointer to the player as a target. Only set by the player attack function.
+	APlayer_Char* playerTarget = nullptr;
 
 	//Enemy Leader target variable. Set when an enemy leader is within distance, which will create a middle point between leaders and they will move to the mutual location.
 	ANPC* enemyLeader = nullptr;
@@ -120,7 +121,7 @@ public:
 	void FilterEnemies (const TArray<AActor*> enemies, ANPC* npc);
 
 	//Function that will set the player as the npc's target
-	void PlayerAttack(AActor* player);
+	void SetPlayerTarget (APlayer_Char* player);
 
 private:
 
