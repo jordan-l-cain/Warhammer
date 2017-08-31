@@ -29,6 +29,13 @@ void AWarhammerGameModeBase::PopulateLeaderList()
 	}*/
 }
 
+void AWarhammerGameModeBase::SetTravelLocation(const ANPC* caller)
+{
+	SetTravelLocationEvent(caller);
+}
+
+
+
 void AWarhammerGameModeBase::ReplaceLeader(int32 indexOf, ANPC* replacement, ANPC* oldLeader)
 {
 	/*for (auto* actor : LeaderList)

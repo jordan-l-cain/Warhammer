@@ -98,12 +98,15 @@ public:
 	//Enum used to set a npc type that is readable by the movement script, so it may determine it's actions
 	ENPCRace npcRace;
 
+	UFUNCTION(BlueprintPure)
 	// Return function that will allow the movement script to determine the npc type
 	ENPCRace GetNPCRace();
 
+	UFUNCTION(BlueprintPure)
 	// Returns ENPCRace of Dwarf for comparison
 	ENPCRace GetDwarfRace();
 
+	UFUNCTION(BlueprintPure)
 	// Returns ENPCRace of Dwarf for comparison
 	ENPCRace GetGreenskinRace();
 

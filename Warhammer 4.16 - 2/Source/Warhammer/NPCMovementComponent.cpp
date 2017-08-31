@@ -54,6 +54,13 @@ void UNPCMovementComponent::MoveToLocation(ANPC* npc)
 	//Create alternate movement options for after combat
 
 	///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, trying to move to location."), *npc->GetName());
+	AWarhammerGameModeBase* gameMode = Cast<AWarhammerGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (gameMode && !npc->waypoint)
+	{
+		///UE_LOG(LogTemp, Warning, TEXT("Game mode is valid"));
+		gameMode->SetTravelLocationEvent(npc);
+	}
+
 	MaxWalkSpeed = 600;
 	locationTimer++;
 
@@ -62,7 +69,7 @@ void UNPCMovementComponent::MoveToLocation(ANPC* npc)
 		curMoveState = EMoveStates::MOVETOPLAYER;
 	}
 
-	if (!enemyLeader)
+	if (!enemyLeader && npc->waypoint)
 	{
 		///UE_LOG(LogTemp, Warning, TEXT("This npc is %s, does not have an enemy leader."), *npc->GetName());
 
