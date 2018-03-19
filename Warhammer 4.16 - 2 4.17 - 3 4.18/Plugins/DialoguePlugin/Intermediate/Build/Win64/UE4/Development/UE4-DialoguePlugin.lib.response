@@ -1,0 +1,8 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+"C:\Users\cain_\Documents\Repository\PortfolioPiece_root\Warhammer 4.16 - 2 4.17 - 3\Plugins\DialoguePlugin\Intermediate\Build\Win64\UE4\Development\DialoguePlugin\Module.DialoguePlugin.cpp.obj"
+"C:\Users\cain_\Documents\Repository\PortfolioPiece_root\Warhammer 4.16 - 2 4.17 - 3\Plugins\DialoguePlugin\Intermediate\Build\Win64\UE4\Development\DialoguePlugin\Module.DialoguePlugin.gen.cpp.obj"
+"C:\Users\cain_\Documents\Repository\PortfolioPiece_root\Warhammer 4.16 - 2 4.17 - 3\Intermediate\Build\Win64\UE4\Development\DialoguePlugin\PCLaunch.rc.res"
+/OUT:"C:\Users\cain_\Documents\Repository\PortfolioPiece_root\Warhammer 4.16 - 2 4.17 - 3\Plugins\DialoguePlugin\Binaries\Win64\UE4-DialoguePlugin.lib"

@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-DialoguePluginEditor-9513.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Program Files\Epic Games\UE_4.18\Engine\Intermediate\Build\Win64\UE4Editor\Development\UnrealEd\SharedPCH.UnrealEd.h.obj"
+"C:\Users\cain_\Documents\Repository\PortfolioPiece_root\Warhammer 4.16 - 2 4.17 - 3 4.18\Plugins\DialoguePlugin\Intermediate\Build\Win64\UE4Editor\Development\DialoguePluginEditor\Module.DialoguePluginEditor.cpp.obj"
+"C:\Program Files\Epic Games\UE_4.18\Engine\Intermediate\Build\Win64\UE4Editor\Development\DialoguePluginEditor\PCLaunch.rc.res"
+"C:\Program Files\Epic Games\UE_4.18\Engine\Intermediate\Build\Win64\UE4Editor\Development\ModuleVersionResource.rc.inl.res"
+/OUT:"C:\Users\cain_\Documents\Repository\PortfolioPiece_root\Warhammer 4.16 - 2 4.17 - 3 4.18\Plugins\DialoguePlugin\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-DialoguePluginEditor-9513.lib"
