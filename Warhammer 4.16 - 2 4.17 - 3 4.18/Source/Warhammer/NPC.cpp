@@ -7,11 +7,12 @@
 #include "PlayerMovementComponent.h"
 #include "NPC.h"
 
-
+const FName ANPC::drunk = FName(TEXT("Drunk"));
+const FName ANPC::dancer = FName(TEXT("Dancer"));
 // Sets default values
-ANPC::ANPC(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer.SetDefaultSubobjectClass<UNPCMovementComponent>(ACharacter::CharacterMovementComponentName)) 
+ANPC::ANPC(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UNPCMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -166,6 +167,13 @@ void ANPC::CallHitAnimationEvent(int weapon, int animation)
 void ANPC::CallDeathAnimationEvent(int weapon, int animation)
 {
 	PlayDeathAnimation(weapon, animation);
+}
+
+void ANPC::EndDialogue()
+{
+	npc->movementComponent->moveToLocation = true;
+	npc->npcController->SetState(ENPCStates::IDLE);
+	UE_LOG(LogTemp, Warning, TEXT("Resetting npc"));
 }
 
 void ANPC::FollowersAttack(ANPC* follower, APlayer_Char* player)
@@ -500,5 +508,15 @@ void ANPC::FindTarget(ANPC * dyingNPC, ANPC * friendlyFollower, ANPC * enemy, AN
 	}*/
 }
 
+bool ANPC::ActivityTimer()
+{
+	activityTime += 0.01f;
 
+	if (activityTime > maxActivityTime)
+	{
+		return true;
+	}
+
+	return false;
+}
 

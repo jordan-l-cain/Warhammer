@@ -83,15 +83,7 @@ public:
 
 	//Function that will switch the state to a dialogue state so that a dialogue may occur
 	UFUNCTION(BlueprintCallable, Category="Functions")
-	void EnterDialogueState	();
-
-	//Event that will create dialogue widget
-	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
-	void CreateDialogue();
-
-	//Function that will end a dialogue and reset the npc
-	UFUNCTION(BlueprintCallable, Category = "Functions")
-	void EndDialogue();
+	void EnterDialogueState();
 
 	//Function that will send the npc into an event, and move them to a given location
 	void EnterEvent(AActor* eventLocation, TArray<AActor*> positions);

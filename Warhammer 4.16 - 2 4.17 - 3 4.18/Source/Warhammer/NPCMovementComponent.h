@@ -20,6 +20,7 @@ enum class EMoveStates : uint8
 	MOVETOENEMY UMETA(DisplayName = "MoveToEnemy"),
 	MOVETOPLAYER UMETA(DisplayName = "MoveToPlayer"),
 	MOVETOEVENT UMETA(DisplayName = "MoveToEvent"),
+	MOVETOACTIVITY UMETA(DisplayName = "MoveToActivity"),
 	FLEE UMETA(DisplayName = "Flee")
 };
 
@@ -74,6 +75,9 @@ public:
 	//Bool used to call the move to location MoveTo event one time
 	bool moveToLocation = true;
 
+	//Bool used by npcController to determine when npc is at activity location
+	bool atActivity = false;
+
 	//timer used in the MoveToLocation function
 	int locationTimer = 0;
 
@@ -121,6 +125,9 @@ public:
 	//Return function that will return the Move To Event state
 	EMoveStates GetMoveToEventState();
 
+	//Return function that will return the Move To Activity state
+	EMoveStates GetMoveToActivityState();
+
 	//Return function that will return the Flee state
 	EMoveStates GetFleeState();
 
@@ -137,7 +144,8 @@ public:
 	//Function that will set the player as the npc's target
 	void SetPlayerTarget (APlayer_Char* player);
 
-	//Used to determine when to move this npc
+	UPROPERTY(BlueprintReadWrite)
+	//Used to determine when to move this npc in follow state and to move when the leader's are fighting
 	bool move = true;
 
 	//Class of the formation position, used to spawn an instance of the blueprint
@@ -188,6 +196,9 @@ private:
 
 	//Move To Location function, which will check the distance to the target position
 	void MoveToEvent(ANPC* npc);
+
+	//Move to Activity Function, will move the npc to the activity and then return the npc to the intown state
+	void MoveToActivity(ANPC* npc);
 
 	//Movement state once leader dies and followers need to flee to where they came from
 	void Flee(ANPC* npc);

@@ -11,6 +11,7 @@ class ANPC_Controller;
 class AWarhammerGameModeBase;
 class APlayer_Char;
 class ALocations;
+class AActivityObject;
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class ENPCRace : uint8
@@ -87,6 +88,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Boolean used to determine if this npc is dead.
 	bool isDead = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
+	//Boolean used for blocking to keep from damaging health
+	bool blocking = false;
+
+	//Boolean used to determine if npc is at and participating in an activity
+	bool inActivity = false;
 
 	//Function that adjusts npc health
 	void ModHealth(float modifier);
@@ -225,6 +233,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WaitForHit(ANPC* enemy, int weapon, int animation);
 
+	//Event that will create dialogue widget
+	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
+	void CreateDialogue();
+
+	//Function that will end a dialogue and reset the npc
+	UFUNCTION(BlueprintCallable, Category = "Functions")
+	void EndDialogue();
+
 	//Function that will send the followers of this npc specified by the player in filterenemies to fight the player
 	void FollowersAttack(ANPC* follower, APlayer_Char* player);
 
@@ -252,9 +268,34 @@ public:
 	//Function used in the die state to find a new target
 	void FindTarget(ANPC* dyingNPC, ANPC* friendlyFollower, ANPC* enemy, ANPC* enemyFollower);
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "NPC Settings")
+	//Activity set by location npc is at
+	AActivityObject* activity;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
-	//Boolean used for blocking to keep from damaging health
-	bool blocking = false;
+	//Array to hold tags, used to determine dialogues and activities
+	TArray<FName> personalityTags;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	//This function will start the animation on the npc's activity
+	void StartActivityEvent();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	//This function will end the activity's animation normally
+	void EndActivityNormalEvent();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	//This function will end the activity's animation with fleeing
+	void EndActivityFleeEvent();
+
+	//Function that will serve as individual npc timer for activities, so not everyone changes at once
+	bool ActivityTimer();
+
+	//float used for the activity timer
+	float activityTime = 0.0f;
+
+	//Max time for the activity timer
+	float maxActivityTime = FMath::RandRange(0, 600);
 
 protected:
 	// Called when the game starts or when spawned
@@ -269,5 +310,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	
-	
+	//Section for tags
+
+	static const FName drunk;
+	static const FName dancer;
+
 };

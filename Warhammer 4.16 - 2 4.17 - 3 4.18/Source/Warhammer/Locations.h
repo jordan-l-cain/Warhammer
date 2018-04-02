@@ -8,6 +8,7 @@
 
 class ALocations;
 class ANPC;
+class AActivityObject;
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class ELocation : uint8
@@ -67,6 +68,9 @@ public:
 	//Enum for comparison
 	ELocation location;
 
+	//Function that determines the actions of npcs in the locationNPCs array
+	void ActiveLocation();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//Map of arrays which contain directions to each location, The key being the destination, the value being the waypoints to the destination
 	TMap< ELocation, FLocationsArray> locationArrays;
@@ -84,4 +88,32 @@ public:
 
 	static void nextWaypoint(ANPC* npc);
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//Array of NPCs at this location
+	TArray<ANPC*> locationNPCs;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//Array of activities at this location
+	TArray<AActivityObject*> drunkActivities;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//Array of activities at this location
+	TArray<AActivityObject*> dancerActivities;
+
+	//Function will add npc's to locationNPCs array, and give them initial activities if they don't already have once
+	void AddNPC(ANPC* npc);
+
+	//Function that check's npc's information to find a fitting activity
+	void GetActivity(ANPC* npc);
+
+	//Function that will serve as the location main timer, sending check for a new activity for all locationNPCs
+	bool MainTimer();
+
+private:
+
+	//float used in MainTimer
+	float time = 0.0f;
+
+	//Max timer for MainTimer 
+	float maxTime = 5.0f;
 };

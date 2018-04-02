@@ -7,6 +7,7 @@
 #include "PlayerMovementComponent.h"
 #include "WarhammerGameModeBase.h"
 #include "Locations.h"
+#include "ActivityObject.h"
 #include "NPCMovementComponent.h"
 
 
@@ -24,7 +25,7 @@ void UNPCMovementComponent::MoveAI(ANPC* npc)
 	{
 		case EMoveStates::MOVETOLOCATION:
 			MoveToLocation(npc);
-		break;
+			break;
 
 		case EMoveStates::FOLLOW:
 			Follow(npc);
@@ -40,6 +41,10 @@ void UNPCMovementComponent::MoveAI(ANPC* npc)
 
 		case EMoveStates::MOVETOEVENT:
 			MoveToEvent(npc);
+			break;
+
+		case EMoveStates::MOVETOACTIVITY:
+			MoveToActivity(npc);
 			break;
 
 		case EMoveStates::MOVETOPLAYER:
@@ -926,6 +931,29 @@ void UNPCMovementComponent::MoveToEvent(ANPC* npc)
 	}
 }
 
+void UNPCMovementComponent::MoveToActivity(ANPC * npc)
+{
+	if (npc->activity && move)
+	{
+		FVector distance = npc->GetActorLocation() - npc->activity->GetActorLocation();
+
+		if (distance.Size() > 150 && Velocity.Size() < 10)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("not at activity and not moving"));
+			npc->npcController->MoveToLocation(npc->activity->GetActorLocation(), -1.0f);
+		}
+
+		if (distance.Size() <= 150)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("At activity"));
+			
+			npc->movementComponent->atActivity = true;
+			npc->movementComponent->move = false;
+			npc->npcController->SetState(ENPCStates::INTOWN);
+		}
+	}
+}
+
 void UNPCMovementComponent::Flee(ANPC* npc)
 {
 	//Once the npc reaches it's location, it should either move to the garrison location, or possibly move to the location specific events
@@ -1013,6 +1041,11 @@ EMoveStates UNPCMovementComponent::GetMoveToLocationState()
 EMoveStates UNPCMovementComponent::GetMoveToEventState()
 {
 	return EMoveStates::MOVETOEVENT;
+}
+
+EMoveStates UNPCMovementComponent::GetMoveToActivityState()
+{
+	return EMoveStates::MOVETOACTIVITY;
 }
 
 EMoveStates UNPCMovementComponent::GetFleeState()

@@ -5,6 +5,7 @@
 #include "NPCMovementComponent.h"
 #include "Combat.h"
 #include "WarhammerGameModeBase.h"
+#include "Locations.h"
 #include "Player_Char.h"
 #include "PlayerMovementComponent.h"
 #include "NPC_Controller.h"
@@ -183,13 +184,6 @@ void ANPC_Controller::EnterDialogueState()
 	SetState(ENPCStates::DIALOGUE);
 }
 
-void ANPC_Controller::EndDialogue()
-{
-	npc->movementComponent->moveToLocation = true;
-	SetState(ENPCStates::IDLE);
-	UE_LOG(LogTemp, Warning, TEXT("Resetting npc"));
-}
-
 void ANPC_Controller::EnterEvent(AActor* eventLocation, TArray<AActor*> positions)
 {
 	positionIndex = 0;
@@ -218,7 +212,7 @@ void ANPC_Controller::StateIdle()
 	if (ensure(npc->movementComponent) && npc->GetNPCType() != npc->GetCommonerType())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Movement Component is set, setting state to move for %s"), *npc->GetName());
-
+		
 		if (npc->isLeader)
 		{
 			for (auto* follower : npc->followers)
@@ -242,6 +236,7 @@ void ANPC_Controller::StateIdle()
 
 	}else if (npc->GetNPCType() == npc->GetCommonerType())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Setting %s to in Town state"), *npc->GetName());
 		SetState(ENPCStates::INTOWN);
 
 	}else
@@ -354,6 +349,8 @@ void ANPC_Controller::StateAttackPlayer()
 	{
 		distanceToPlayer = npc->GetActorLocation() - npc->movementComponent->playerTarget->GetActorLocation();
 
+		//TODO add inmovestate event so npc's walk
+
 		PlayerLockOn(npc->movementComponent->playerTarget);
 
 		if (npc->movementComponent->playerTarget->ForwardMovement != 0.0f && distanceToPlayer.Size() < 500.0f)
@@ -409,10 +406,10 @@ void ANPC_Controller::StateDialogue()
 {
 	if (npc->GetVelocity().Size() > 0)
 	{
-		
+		//TODO get rid of dialogue state, replace with bool and function to check npc constraints, like if they are in follow state, etc;
 		//npc->movementComponent->DisableMovement();
 		npc->movementComponent->StopActiveMovement();
-		CreateDialogue();
+		npc->CreateDialogue();
 		UE_LOG(LogTemp, Warning, TEXT("Velocity X: %f"), npc->GetVelocity().Size());
 	}
 }
@@ -508,7 +505,47 @@ void ANPC_Controller::StateEvent()
 
 void ANPC_Controller::StateInTown()
 {
+	if (npc->currentLocation)
+	{
+		npc->currentLocation->AddNPC(npc);
+	}
 
+	/*
+		TODO create function for timer that returns bool to indicate when to move to next activity
+
+		if activity
+			if not at activity
+				cur move state move to activity
+				move ai
+
+			if at activity
+				call function to play start animation to loop animation section
+
+			if timer for next activity
+				call function to play finish section
+	*/
+
+	//timer function, while i < time return true, called from locations
+
+	if (npc->activity)
+	{
+		if (!npc->movementComponent->atActivity)
+		{
+			if (npc->ActivityTimer())
+			{
+				//TODO solve occupation issue, where I can't make the position unoccupied  immediately due to npc timer
+				npc->activityTime = 0.0f;
+				UE_LOG(LogTemp, Warning, TEXT("Moving to activity"));
+				npc->movementComponent->curMoveState = npc->movementComponent->GetMoveToActivityState();
+				npc->npcController->SetState(ENPCStates::MOVE);
+			}
+		} else if(!npc->inActivity)
+		{
+			npc->inActivity = true;
+			npc->StartActivityEvent();
+			UE_LOG(LogTemp, Warning, TEXT("Starting activity"));
+		}
+	}
 }
 
 void ANPC_Controller::StateDie()
