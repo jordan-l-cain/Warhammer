@@ -5,10 +5,15 @@
 #include "NPC_Controller.h"
 #include "Player_Char.h"
 #include "PlayerMovementComponent.h"
+#include "Locations.h"
 #include "NPC.h"
 
-const FName ANPC::drunk = FName(TEXT("Drunk"));
-const FName ANPC::dancer = FName(TEXT("Dancer"));
+const FName ANPC::drink = FName(TEXT("Drink"));
+const FName ANPC::library = FName(TEXT("Library"));
+const FName ANPC::street = FName(TEXT("Street"));
+const FName ANPC::vendor = FName(TEXT("Vendor"));
+const FName ANPC::customer = FName(TEXT("Customer"));
+
 // Sets default values
 ANPC::ANPC(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UNPCMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
@@ -508,11 +513,18 @@ void ANPC::FindTarget(ANPC * dyingNPC, ANPC * friendlyFollower, ANPC * enemy, AN
 	}*/
 }
 
-bool ANPC::ActivityTimer()
+void ANPC::NextActivity(ANPC* activityNPC)
+{
+	activityNPC->currentLocation->GetActivity(activityNPC);
+	activityNPC->movementComponent->atActivity = false;
+	activityNPC->inActivity = false;
+}
+
+bool ANPC::ActivityTimer(float maxTime)
 {
 	activityTime += 0.01f;
 
-	if (activityTime > maxActivityTime)
+	if (activityTime > maxTime)
 	{
 		return true;
 	}

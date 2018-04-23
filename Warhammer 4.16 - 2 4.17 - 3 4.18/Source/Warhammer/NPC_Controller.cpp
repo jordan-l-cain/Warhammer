@@ -8,6 +8,7 @@
 #include "Locations.h"
 #include "Player_Char.h"
 #include "PlayerMovementComponent.h"
+#include "ActivityObject.h"
 #include "NPC_Controller.h"
 
 // Sets default values
@@ -531,21 +532,29 @@ void ANPC_Controller::StateInTown()
 	{
 		if (!npc->movementComponent->atActivity)
 		{
-			if (npc->ActivityTimer())
-			{
-				//TODO solve occupation issue, where I can't make the position unoccupied  immediately due to npc timer
-				npc->activityTime = 0.0f;
-				UE_LOG(LogTemp, Warning, TEXT("Moving to activity"));
-				npc->movementComponent->curMoveState = npc->movementComponent->GetMoveToActivityState();
-				npc->npcController->SetState(ENPCStates::MOVE);
-			}
+			UE_LOG(LogTemp, Warning, TEXT("Moving to activity"));
+			npc->movementComponent->curMoveState = npc->movementComponent->GetMoveToActivityState();
+			npc->npcController->SetState(ENPCStates::MOVE);
+		
+		} else if (!npc->inActivity && npc->activity->GetAngleFromActivity(npc))		
+		{
+			//TODO solve why this is being skipped. Perhaps copy above param below
+			npc->activity->activityNPC = npc;
+			npc->activity->FaceActivity();
+
 		} else if(!npc->inActivity)
 		{
+
 			npc->inActivity = true;
 			npc->StartActivityEvent();
+			npc->activityTime = 0.0f;
 			UE_LOG(LogTemp, Warning, TEXT("Starting activity"));
+
+		} else
+		{
+			//Here I can call a function to play one off animations
 		}
-	}
+	} 
 }
 
 void ANPC_Controller::StateDie()

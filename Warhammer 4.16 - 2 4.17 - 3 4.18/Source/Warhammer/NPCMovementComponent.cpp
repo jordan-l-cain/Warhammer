@@ -937,13 +937,13 @@ void UNPCMovementComponent::MoveToActivity(ANPC * npc)
 	{
 		FVector distance = npc->GetActorLocation() - npc->activity->GetActorLocation();
 
-		if (distance.Size() > 150 && Velocity.Size() < 10)
+		if (distance.Size() > 110 && Velocity.Size() < 10)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("not at activity and not moving"));
 			npc->npcController->MoveToLocation(npc->activity->GetActorLocation(), -1.0f);
 		}
 
-		if (distance.Size() <= 150)
+		if (distance.Size() <= 110)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("At activity"));
 			

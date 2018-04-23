@@ -272,6 +272,9 @@ public:
 	//Activity set by location npc is at
 	AActivityObject* activity;
 
+	//Pointer to previous activity, so npc can iterate through get activity if need be
+	AActivityObject* previousActivity;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Settings")
 	//Array to hold tags, used to determine dialogues and activities
 	TArray<FName> personalityTags;
@@ -288,14 +291,18 @@ public:
 	//This function will end the activity's animation with fleeing
 	void EndActivityFleeEvent();
 
+	UFUNCTION(BlueprintCallable)
+	//Called by npc when thei activity animations are done
+	void NextActivity(ANPC* activityNPC);
+
 	//Function that will serve as individual npc timer for activities, so not everyone changes at once
-	bool ActivityTimer();
+	bool ActivityTimer(float maxTime);
 
 	//float used for the activity timer
 	float activityTime = 0.0f;
 
-	//Max time for the activity timer
-	float maxActivityTime = FMath::RandRange(0, 600);
+	//float that dictates how long after the location timer goes off for the player to go to the next activity
+	float maxActivityTime = 0.0f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -312,7 +319,10 @@ public:
 	
 	//Section for tags
 
-	static const FName drunk;
-	static const FName dancer;
+	static const FName drink;
+	static const FName library;
+	static const FName street;
+	static const FName vendor;
+	static const FName customer;
 
 };

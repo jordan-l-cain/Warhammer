@@ -2,6 +2,7 @@
 
 #include "Warhammer.h"
 #include "Locations.h"
+#include "NPC.h"
 #include "ActivityObject.h"
 
 
@@ -17,15 +18,29 @@ AActivityObject::AActivityObject()
 void AActivityObject::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if (location)
 	{
 		if (drunkActivity)
 		{
 			location->drunkActivities.Add(this);
 
-		} else if (dancerActivity)
+		} else if (libraryActivity)
 		{
-			location->dancerActivities.Add(this);
+			location->libraryActivities.Add(this);
+			
+		} else if (streetActivity)
+		{
+			location->streetActivities.Add(this);
+
+		} else if (vendorActivity)
+		{
+			location->vendorActivities.Add(this);
+
+		} else if (customerActivity)
+		{
+			location->customerActivities.Add(this);
+
 		}
 	}
 }
@@ -35,5 +50,27 @@ void AActivityObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (activityNPC)
+	{
+		if (ActivityTimer())
+		{
+			activityNPC->EndActivityNormalEvent();
+			activityNPC = nullptr;
+			time = 0.0;
+		}
+	}
+}
+
+bool AActivityObject::ActivityTimer()
+{
+	time += 0.01f;
+
+	if (time > maxActivityTime)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Activity is over for %s"), *activityNPC->GetName());
+		return true;
+	}
+
+	return false;
 }
 

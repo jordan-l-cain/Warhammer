@@ -31,14 +31,9 @@ void ALocations::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (locationNPCs.Num() > 0)
-	{
-		ActiveLocation();
-	}
 }
 
-void ALocations::ActiveLocation()
-{
+
 	/*
 		TODO How to handle timers?
 		TODO create npc variables
@@ -46,40 +41,22 @@ void ALocations::ActiveLocation()
 		TODO account for interrupting activities
 		TODO if already at activity, can't do same activity
 
-		location has main timer, which once ends triggers minor timers on individual npcs
+		activities are individual timers, which will determine when the npc goes to new event
+			activity calls end activity event on npc
+				one called, animation montage has event that will trigger at end of finish animation
+					sets activity to unoccupied and gets npc a new activity
+
 
 		if location has npcs and activities
 			if not in activity
-				assign rand time to npc
 				set them to go to new activity
-				set bool, one once they head off to activity and one when they get there, which will start the timer from when they'll go elsewhere
-				Give personality enum to each, which determines what activities they can participate in, perhaps tags?
+				in npc controller set bool, one once they head off to activity and one when they get there, which will start the timer from when they'll go elsewhere
+				Give personality tag to each, which determines what activities they can participate in
 			if no activity available
 				go to home and wait for next timer
 	
 	*/
 
-	if (MainTimer())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Timer is up"));
-
-		for (auto* npc : locationNPCs)
-		{
-			if (npc->activity)
-			{
-				npc->activity->occupied = false;
-				npc->EndActivityNormalEvent();
-			}
-
-			GetActivity(npc);
-			npc->movementComponent->atActivity = false;
-			npc->inActivity = false;
-		}
-
-		time = 0.0f;
-		maxTime = FMath::RandRange(0, 600);
-	}
-}
 
 //TODO function for checking when someone arrives, raises opposite race's probability
 //TODO for adding/removing npc's from an array to determine when to increase/decrease probability
@@ -194,91 +171,97 @@ void ALocations::AddNPC(ANPC * npc)
 void ALocations::GetActivity(ANPC * npc)
 {
 	bool drunk = false;
-	bool dancer = false;
+	bool library = false;
+	bool street = false;
+	bool vendor = false;
+	bool customer = false;
 
 	bool previousDrunk = false;
-	bool previousDancer = false;
-
-	npc->maxActivityTime = FMath::RandRange(0, 600);
+	bool previousLibrary = false;
+	bool previousStreet = false;
+	bool previousVendor = false;
 
 	if (npc->activity)
 	{
-		if (drunkActivities.Contains(npc->activity))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Previously drunk at %s"), *npc->activity->GetName());
-			previousDrunk = true;
-		
-		}else if (dancerActivities.Contains(npc->activity))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Previously dancing at %s"), *npc->activity->GetName());
-			previousDancer = true;
-		
-		}
+		npc->activity->occupied = false;
+		npc->previousActivity = npc->activity;
+		npc->activity = nullptr;
 	}
 
+	if(npc->previousActivity)
+	{ 
+
+		if (drunkActivities.Contains(npc->previousActivity))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Previously drunk at %s"), *npc->previousActivity->GetName());
+			previousDrunk = true;
+
+		} else if (libraryActivities.Contains(npc->previousActivity))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Previously library at %s"), *npc->previousActivity->GetName());
+			previousLibrary= true;
+
+		} else if (streetActivities.Contains(npc->previousActivity))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Previously street at %s"), *npc->previousActivity->GetName());
+			previousStreet = true;
+
+		} else if (vendorActivities.Contains(npc->previousActivity))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Previously market at %s"), *npc->previousActivity->GetName());
+			previousVendor = true;
+
+		}
+	}
 
 	if (npc->personalityTags.Num() > 0)
 	{
 		for (auto tag : npc->personalityTags)
 		{
-			if (tag == ANPC::drunk && !previousDrunk)
+			if (tag == ANPC::drink && !previousDrunk)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("drunk"));
 				drunk = true;
 			}
 
-			if (tag == ANPC::dancer && !previousDancer)
+			if (tag == ANPC::library && !previousLibrary)
 			{
-				dancer = true;
+				UE_LOG(LogTemp, Warning, TEXT("library"));
+				library = true;
+			}
+
+			if (tag == ANPC::street && !previousStreet)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("street"));
+				street = true;
+			}
+
+			if (tag == ANPC::vendor && !previousVendor)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("vendor"));
+				vendor = true;
+			}
+
+			if (tag == ANPC::customer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("customer"));
+				customer = true;
 			}
 		}
 
-		if (drunk && dancer)
-		{
-			int i = FMath::RandRange(0, 1);
+		int i = FMath::RandRange(0, 4);
 
-			if (i == 0)
-			{
-				if (drunkActivities.Num() > 0)
-				{
-					int a = FMath::RandRange(0, drunkActivities.Num() - 1);
-
-					if (!npc->activity->occupied)
-					{
-						npc->activity = drunkActivities[a];
-					
-					} else
-					{
-						GetActivity(npc);
-						return;
-					}
-				}
-
-			}else if( i == 1)
-			{
-				if (dancerActivities.Num() > 0)
-				{
-					int a = FMath::RandRange(0, dancerActivities.Num() - 1);
-
-					if (!npc->activity->occupied)
-					{
-						npc->activity = dancerActivities[a];
-
-					} else
-					{
-						GetActivity(npc);
-						return;
-					}
-			}
-
-		}else if (drunk)
+		if (i == 0 && drunk)
 		{
 			if (drunkActivities.Num() > 0)
 			{
 				int a = FMath::RandRange(0, drunkActivities.Num() - 1);
 
-				if (!npc->activity->occupied)
+				if (!drunkActivities[a]->occupied)
 				{
 					npc->activity = drunkActivities[a];
+					npc->activity->occupied = true;
+					return;
 
 				} else
 				{
@@ -287,15 +270,74 @@ void ALocations::GetActivity(ANPC * npc)
 				}
 			}
 
-		}else if (dancer)
+		} else if (i == 1 && library)
 		{
-			if (dancerActivities.Num() > 0)
+			if (libraryActivities.Num() > 0)
 			{
-				int a = FMath::RandRange(0, dancerActivities.Num() - 1);
+				int a = FMath::RandRange(0, libraryActivities.Num() - 1);
 
-				if (!npc->activity->occupied)
+				if (!libraryActivities[a]->occupied)
 				{
-					npc->activity = dancerActivities[a];
+					npc->activity = libraryActivities[a];
+					npc->activity->occupied = true;
+					return;
+
+				} else
+				{
+					GetActivity(npc);
+					return;
+				}
+			}
+
+		} else if (i == 2 && street)
+		{
+			if (streetActivities.Num() > 0)
+			{
+				int a = FMath::RandRange(0, streetActivities.Num() - 1);
+
+				if (!streetActivities[a]->occupied)
+				{
+					npc->activity = streetActivities[a];
+					npc->activity->occupied = true;
+					return;
+
+				} else
+				{
+					GetActivity(npc);
+					return;
+				}
+			}
+
+		} else if (i == 3 && vendor)
+		{
+			if (vendorActivities.Num() > 0)
+			{
+				int a = FMath::RandRange(0, vendorActivities.Num() - 1);
+
+				if (!vendorActivities[a]->occupied)
+				{
+					npc->activity = vendorActivities[a];
+					npc->activity->occupied = true;
+					return;
+
+				} else
+				{
+					GetActivity(npc);
+					return;
+				}
+			}
+
+		} else if (i == 4 && customer)
+		{
+			if (customerActivities.Num() > 0)
+			{
+				int a = FMath::RandRange(0, customerActivities.Num() - 1);
+
+				if (!customerActivities[a]->occupied)
+				{
+					npc->activity = customerActivities[a];
+					npc->activity->occupied = true;
+					return;
 
 				} else
 				{
@@ -305,21 +347,12 @@ void ALocations::GetActivity(ANPC * npc)
 			}
 		} else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("No activities for %s"), *npc->GetName());
+			GetActivity(npc);
 		}
 	}
 }
 
-bool ALocations::MainTimer()
-{
-	time += 0.01f;
 
-	if (time > maxTime)
-	{
-		return true;
-	}
 
-	return false;
-}
 
 

@@ -26,6 +26,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	//Function in BP, face npc in correct direction for animation
+	void FaceActivity();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//The current location of this activity
@@ -35,8 +38,17 @@ public:
 	//Array of any animations associated with this activity
 	TArray<UAnimMontage*> activityAnimations;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//One off animations for the activity
+	TArray<UAnimMontage*> actions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//Max time for the activity timer
+	float maxActivityTime;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	//NPC pointer to npc currently at this activity 
-	ANPC* npc;
+	ANPC* activityNPC;
 
 	//Bool used to determine if an npc is already at this activity
 	bool occupied = false;
@@ -45,5 +57,25 @@ public:
 	bool drunkActivity = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool dancerActivity = false;
+	bool libraryActivity = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool vendorActivity = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool customerActivity = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool streetActivity = false;
+
+	float time = 0.0f;
+
+	//Will send npc to next activity
+	bool ActivityTimer();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	//Will return false once the angle between the npc and the activity is between 1 and -1
+	bool GetAngleFromActivity(ANPC* npc);
 };
+
+
