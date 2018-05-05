@@ -164,6 +164,7 @@ void ALocations::AddNPC(ANPC * npc)
 
 	if (!npc->activity)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%s does not have an activity"), *npc->GetName());
 		GetActivity(npc);
 	}
 }
@@ -181,6 +182,8 @@ void ALocations::GetActivity(ANPC * npc)
 	bool previousStreet = false;
 	bool previousVendor = false;
 
+	TArray<int> possibleActivities;
+	
 	if (npc->activity)
 	{
 		npc->activity->occupied = false;
@@ -213,45 +216,50 @@ void ALocations::GetActivity(ANPC * npc)
 
 		}
 	}
-
+	
 	if (npc->personalityTags.Num() > 0)
 	{
 		for (auto tag : npc->personalityTags)
 		{
 			if (tag == ANPC::drink && !previousDrunk)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("drunk"));
+				///UE_LOG(LogTemp, Warning, TEXT("drunk"));
+				possibleActivities.Add(1);
 				drunk = true;
 			}
 
 			if (tag == ANPC::library && !previousLibrary)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("library"));
+				///UE_LOG(LogTemp, Warning, TEXT("library"));
+				possibleActivities.Add(2);
 				library = true;
 			}
 
 			if (tag == ANPC::street && !previousStreet)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("street"));
+				///UE_LOG(LogTemp, Warning, TEXT("street"));
+				possibleActivities.Add(3);
 				street = true;
 			}
 
 			if (tag == ANPC::vendor && !previousVendor)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("vendor"));
+				///UE_LOG(LogTemp, Warning, TEXT("vendor"));
+				possibleActivities.Add(4);
 				vendor = true;
 			}
 
 			if (tag == ANPC::customer)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("customer"));
+				///UE_LOG(LogTemp, Warning, TEXT("customer"));
+				possibleActivities.Add(5);
 				customer = true;
 			}
 		}
 
-		int i = FMath::RandRange(0, 4);
+		int i = possibleActivities[FMath::RandRange(0, possibleActivities.Num() - 1)];
 
-		if (i == 0 && drunk)
+		if (i == 1 && drunk)
 		{
 			if (drunkActivities.Num() > 0)
 			{
@@ -270,7 +278,7 @@ void ALocations::GetActivity(ANPC * npc)
 				}
 			}
 
-		} else if (i == 1 && library)
+		} else if (i == 2 && library)
 		{
 			if (libraryActivities.Num() > 0)
 			{
@@ -289,7 +297,7 @@ void ALocations::GetActivity(ANPC * npc)
 				}
 			}
 
-		} else if (i == 2 && street)
+		} else if (i == 3 && street)
 		{
 			if (streetActivities.Num() > 0)
 			{
@@ -308,7 +316,7 @@ void ALocations::GetActivity(ANPC * npc)
 				}
 			}
 
-		} else if (i == 3 && vendor)
+		} else if (i == 4 && vendor)
 		{
 			if (vendorActivities.Num() > 0)
 			{
@@ -327,7 +335,7 @@ void ALocations::GetActivity(ANPC * npc)
 				}
 			}
 
-		} else if (i == 4 && customer)
+		} else if (i == 5 && customer)
 		{
 			if (customerActivities.Num() > 0)
 			{
@@ -335,19 +343,22 @@ void ALocations::GetActivity(ANPC * npc)
 
 				if (!customerActivities[a]->occupied)
 				{
+					UE_LOG(LogTemp, Warning, TEXT("Customer activity for %s"), *npc->GetName());
 					npc->activity = customerActivities[a];
 					npc->activity->occupied = true;
 					return;
 
 				} else
 				{
+					UE_LOG(LogTemp, Warning, TEXT("customer is occupied"));
 					GetActivity(npc);
 					return;
 				}
 			}
 		} else
 		{
-			GetActivity(npc);
+			//GetActivity(npc);
+			UE_LOG(LogTemp, Warning, TEXT("%s does not have an activity to go to"), *npc->GetName());
 		}
 	}
 }

@@ -50,6 +50,7 @@ public:
 	//NPC pointer to npc currently at this activity 
 	ANPC* activityNPC;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	//Bool used to determine if an npc is already at this activity
 	bool occupied = false;
 
@@ -69,13 +70,26 @@ public:
 	bool streetActivity = false;
 
 	float time = 0.0f;
+	float actionTime = 0.0f;
+	float maxActionTime = FMath::RandRange(4, 15);
 
 	//Will send npc to next activity
 	bool ActivityTimer();
 
+	//Function that will play one off animations on npc at activity
+	bool ActionTimer();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	//Will return false once the angle between the npc and the activity is between 1 and -1
 	bool GetAngleFromActivity(ANPC* npc);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	//Function that will play an animation pertaining to this activity
+	void PlayAction();
+
+	UPROPERTY(BlueprintReadWrite)
+	//bool that will stop timer from activating before animation is finished
+	bool pauseActionTimer = false;
 };
 
 

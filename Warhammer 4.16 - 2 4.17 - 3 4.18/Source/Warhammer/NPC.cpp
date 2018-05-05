@@ -515,6 +515,7 @@ void ANPC::FindTarget(ANPC * dyingNPC, ANPC * friendlyFollower, ANPC * enemy, AN
 
 void ANPC::NextActivity(ANPC* activityNPC)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Next activity for %s"), *activityNPC->GetName());
 	activityNPC->currentLocation->GetActivity(activityNPC);
 	activityNPC->movementComponent->atActivity = false;
 	activityNPC->inActivity = false;

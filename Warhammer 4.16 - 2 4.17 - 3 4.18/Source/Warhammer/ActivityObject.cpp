@@ -54,20 +54,50 @@ void AActivityObject::Tick(float DeltaTime)
 	{
 		if (ActivityTimer())
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Ending activity for %s"), *activityNPC->GetName());
 			activityNPC->EndActivityNormalEvent();
 			activityNPC = nullptr;
-			time = 0.0;
+			pauseActionTimer = false;
+			time = 0.0f;
+			actionTime = 0.0f;
+		}
+		
+		if (actions.Num() > 0 && !pauseActionTimer && ActionTimer())
+		{
+			PlayAction();
+			pauseActionTimer = true;
+			actionTime = 0.0f;
 		}
 	}
 }
 
 bool AActivityObject::ActivityTimer()
 {
-	time += 0.01f;
+	time += 0.0166f;
 
 	if (time > maxActivityTime)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Activity is over for %s"), *activityNPC->GetName());
+		return true;
+	}
+
+	return false;
+}
+
+bool AActivityObject::ActionTimer()
+{
+	actionTime += 0.0166f;
+	///UE_LOG(LogTemp, Warning, TEXT("%f"), actionTime);
+
+	if ((time + 10.0f) > maxActivityTime)
+	{
+		///UE_LOG(LogTemp, Warning, TEXT("Time is nearing end %s"), *activityNPC->GetName());
+	}
+
+	if (actionTime > maxActionTime && (time + 10.0f) < maxActivityTime)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Action is called for %s"), *activityNPC->GetName());
+		maxActionTime = FMath::RandRange(1, 10);
 		return true;
 	}
 

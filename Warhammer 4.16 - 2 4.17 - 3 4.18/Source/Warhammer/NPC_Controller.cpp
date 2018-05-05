@@ -237,6 +237,11 @@ void ANPC_Controller::StateIdle()
 
 	}else if (npc->GetNPCType() == npc->GetCommonerType())
 	{
+		if (!npc->currentLocation->locationNPCs.Contains(npc))
+		{
+			npc->currentLocation->AddNPC(npc);
+		}
+
 		UE_LOG(LogTemp, Warning, TEXT("Setting %s to in Town state"), *npc->GetName());
 		SetState(ENPCStates::INTOWN);
 
@@ -506,10 +511,6 @@ void ANPC_Controller::StateEvent()
 
 void ANPC_Controller::StateInTown()
 {
-	if (npc->currentLocation)
-	{
-		npc->currentLocation->AddNPC(npc);
-	}
 
 	/*
 		TODO create function for timer that returns bool to indicate when to move to next activity
@@ -536,7 +537,7 @@ void ANPC_Controller::StateInTown()
 			npc->movementComponent->curMoveState = npc->movementComponent->GetMoveToActivityState();
 			npc->npcController->SetState(ENPCStates::MOVE);
 		
-		} else if (!npc->inActivity && npc->activity->GetAngleFromActivity(npc))		
+		} else if (!npc->inActivity && !npc->activity->GetAngleFromActivity(npc))		
 		{
 			//TODO solve why this is being skipped. Perhaps copy above param below
 			npc->activity->activityNPC = npc;
@@ -544,15 +545,12 @@ void ANPC_Controller::StateInTown()
 
 		} else if(!npc->inActivity)
 		{
-
+			npc->activity->activityNPC = npc;
 			npc->inActivity = true;
 			npc->StartActivityEvent();
 			npc->activityTime = 0.0f;
 			UE_LOG(LogTemp, Warning, TEXT("Starting activity"));
 
-		} else
-		{
-			//Here I can call a function to play one off animations
 		}
 	} 
 }
