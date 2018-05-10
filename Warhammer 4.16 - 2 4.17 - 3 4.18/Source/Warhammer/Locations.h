@@ -109,6 +109,7 @@ public:
 	//Array of activities at this location
 	TArray<AActivityObject*> customerActivities;
 
+	UFUNCTION(BlueprintCallable)
 	//Function will add npc's to locationNPCs array, and give them initial activities if they don't already have one
 	void AddNPC(ANPC* npc);
 

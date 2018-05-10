@@ -96,6 +96,10 @@ public:
 	//Boolean used to determine if npc is at and participating in an activity
 	bool inActivity = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	//Boolean used if NPC is not yet at activity when cull is called
+	bool cull = false;
+
 	//Function that adjusts npc health
 	void ModHealth(float modifier);
 
@@ -315,6 +319,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
+	//Stop actor from ticking
+	void SetTick(bool toTick);
 
 	
 	//Section for tags

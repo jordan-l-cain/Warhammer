@@ -90,6 +90,13 @@ void ANPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void ANPC::SetTick(bool toTick)
+{
+	SetActorTickEnabled(toTick);
+	npcController->SetActorTickEnabled(toTick);
+	UE_LOG(LogTemp, Warning, TEXT("Should be disabled"));
+}
+
 ENPCRace ANPC::GetNPCRace()
 {
 	return npcRace;
@@ -515,10 +522,10 @@ void ANPC::FindTarget(ANPC * dyingNPC, ANPC * friendlyFollower, ANPC * enemy, AN
 
 void ANPC::NextActivity(ANPC* activityNPC)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Next activity for %s"), *activityNPC->GetName());
 	activityNPC->currentLocation->GetActivity(activityNPC);
 	activityNPC->movementComponent->atActivity = false;
 	activityNPC->inActivity = false;
+	UE_LOG(LogTemp, Warning, TEXT("Next activity for %s"), *activityNPC->GetName());
 }
 
 bool ANPC::ActivityTimer(float maxTime)

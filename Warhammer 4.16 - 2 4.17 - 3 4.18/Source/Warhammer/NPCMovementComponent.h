@@ -75,6 +75,7 @@ public:
 	//Bool used to call the move to location MoveTo event one time
 	bool moveToLocation = true;
 
+	UPROPERTY(BlueprintReadOnly)
 	//Bool used by npcController to determine when npc is at activity location
 	bool atActivity = false;
 

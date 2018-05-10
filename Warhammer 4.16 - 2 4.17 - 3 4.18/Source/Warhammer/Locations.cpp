@@ -158,13 +158,13 @@ void ALocations::AddNPC(ANPC * npc)
 {
 	if (!locationNPCs.Contains(npc))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s is adding %s"), *name.ToString(), *npc->GetName());
+		///UE_LOG(LogTemp, Warning, TEXT("%s is adding %s"), *name.ToString(), *npc->GetName());
 		locationNPCs.Add(npc);
 	}
 
 	if (!npc->activity)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s does not have an activity"), *npc->GetName());
+		///UE_LOG(LogTemp, Warning, TEXT("%s does not have an activity"), *npc->GetName());
 		GetActivity(npc);
 	}
 }
@@ -196,22 +196,22 @@ void ALocations::GetActivity(ANPC * npc)
 
 		if (drunkActivities.Contains(npc->previousActivity))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Previously drunk at %s"), *npc->previousActivity->GetName());
+			///UE_LOG(LogTemp, Warning, TEXT("Previously drunk at %s"), *npc->previousActivity->GetName());
 			previousDrunk = true;
 
 		} else if (libraryActivities.Contains(npc->previousActivity))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Previously library at %s"), *npc->previousActivity->GetName());
+			///UE_LOG(LogTemp, Warning, TEXT("Previously library at %s"), *npc->previousActivity->GetName());
 			previousLibrary= true;
 
 		} else if (streetActivities.Contains(npc->previousActivity))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Previously street at %s"), *npc->previousActivity->GetName());
+			///UE_LOG(LogTemp, Warning, TEXT("Previously street at %s"), *npc->previousActivity->GetName());
 			previousStreet = true;
 
 		} else if (vendorActivities.Contains(npc->previousActivity))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Previously market at %s"), *npc->previousActivity->GetName());
+			///UE_LOG(LogTemp, Warning, TEXT("Previously market at %s"), *npc->previousActivity->GetName());
 			previousVendor = true;
 
 		}
@@ -257,7 +257,13 @@ void ALocations::GetActivity(ANPC * npc)
 			}
 		}
 
-		int i = possibleActivities[FMath::RandRange(0, possibleActivities.Num() - 1)];
+		int i = 0;
+
+		if (possibleActivities.Num() > 0)
+		{
+			possibleActivities.Add(0);
+			i = possibleActivities[FMath::RandRange(0, possibleActivities.Num() - 1)];
+		}
 
 		if (i == 1 && drunk)
 		{
@@ -343,19 +349,19 @@ void ALocations::GetActivity(ANPC * npc)
 
 				if (!customerActivities[a]->occupied)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Customer activity for %s"), *npc->GetName());
+					///UE_LOG(LogTemp, Warning, TEXT("Customer activity for %s"), *npc->GetName());
 					npc->activity = customerActivities[a];
 					npc->activity->occupied = true;
 					return;
 
 				} else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("customer is occupied"));
+					///UE_LOG(LogTemp, Warning, TEXT("customer is occupied"));
 					GetActivity(npc);
 					return;
 				}
 			}
-		} else
+		} else if(i == 0)
 		{
 			//GetActivity(npc);
 			UE_LOG(LogTemp, Warning, TEXT("%s does not have an activity to go to"), *npc->GetName());

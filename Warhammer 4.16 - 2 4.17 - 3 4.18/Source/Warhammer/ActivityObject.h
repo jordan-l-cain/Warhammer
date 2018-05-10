@@ -90,6 +90,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	//bool that will stop timer from activating before animation is finished
 	bool pauseActionTimer = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//Boolean used for when activity is culled, but npc is not yet at location
+	bool cull = false;
 };
 
 

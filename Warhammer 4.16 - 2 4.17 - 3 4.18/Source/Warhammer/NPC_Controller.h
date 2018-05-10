@@ -122,6 +122,10 @@ public:
 	//Event used to lock the npc onto the player, via blueprint
 	void PlayerLockOn(AActor* player);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	//Used to delay the AddNPC function in locations.h to help performance
+	void DelayAdd(ANPC* locationNPC);
+
 protected:
 	
 	UFUNCTION(BlueprintCallable, Category= "Functions")
