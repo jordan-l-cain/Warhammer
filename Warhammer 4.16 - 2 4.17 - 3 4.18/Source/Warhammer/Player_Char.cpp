@@ -113,7 +113,7 @@ void APlayer_Char::MoveRight(float AxisValue)
 			//Scale our movement input axis values by 100 units per second
 			SideMovement = SideMovement * 30.0f;
 			//TODO make side movement only move actor to right? Not playing feeding direction right, or not moving true right
-			//playerController->AddYawInput(SideMovement * GetWorld()->GetDeltaSeconds());
+			playerController->AddYawInput(SideMovement * GetWorld()->GetDeltaSeconds());
 			//AddMovementInput(GetActorRightVector(), SideMovement / 10);
 
 			const FRotator Rotation = Controller->GetControlRotation();
@@ -122,7 +122,7 @@ void APlayer_Char::MoveRight(float AxisValue)
 			// get right vector 
 			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 			// add movement in that direction
-			AddMovementInput(Direction, SideMovement / 10);
+			//AddMovementInput(Direction, SideMovement / 10);
 		}
 
 	}
@@ -257,14 +257,18 @@ void APlayer_Char::ZoomOut()
 
 void APlayer_Char::Shift()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Shift called"));
-	ModeShift = true;
+	//UE_LOG(LogTemp, Warning, TEXT("Shift called"));
+	//ModeShift = true;
+	movementComponent->MaxWalkSpeed = 800;
+	Sprint();
 }
 
 void APlayer_Char::UnShift()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UnShift called"));
-	ModeShift = false;
+	//UE_LOG(LogTemp, Warning, TEXT("UnShift called"));
+	//ModeShift = false;
+	movementComponent->MaxWalkSpeed = originalSpeed;
+	EndSprint();
 }
 
 void APlayer_Char::ResetArm()

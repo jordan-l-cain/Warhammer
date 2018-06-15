@@ -62,6 +62,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float SideMovement;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	//Public variable, used by npcs to determine movement direction
 	float ForwardMovement;
 
@@ -226,6 +227,13 @@ public:
 	//Called by PlayerAttacks_AnimState, checks for killing blow or not, damages health
 	void PlayerAttacks(ANPC* enemy);
 
+	UFUNCTION(Category = "Movement Events", BlueprintImplementableEvent)
+	//Event that is called when the player holds shift to sprint
+	void Sprint();
+
+	UFUNCTION(Category = "Movement Events", BlueprintImplementableEvent)
+	//Event that is called when the player holds shift to sprint
+	void EndSprint();
 
 private:
 
